@@ -1,0 +1,255 @@
+/* Estilos CSS Avançados para Layout */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #e9ecef;
+  color: #343a40;
+}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+h1 {
+  color: #007bff;
+  text-align: center;
+  margin-bottom: 30px;
+}
+h2 {
+  color: #495057;
+  margin-top: 25px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #dee2e6;
+}
+.input-group {
+  display: flex; /* Usamos flexbox para alinhar os inputs */
+  gap: 15px;
+  align-items: flex-end; /* Alinha na parte inferior */
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+}
+.input-field {
+  display: flex;
+  flex-direction: column;
+}
+.input-field input,
+.input-field select {
+  padding: 10px;
+  border: 1px solid #adb5bd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+#tonica {
+  width: 100px; /* Tamanho ajustado para o select */
+  text-align: center;
+  font-weight: bold;
+  height: 50px;
+  font-size: 1.3rem;
+  font-family: "Archivo Black", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  
+}
+
+#tipoEscala {
+  width: 200px;
+  font-weight: bold;
+  height: 50px;
+  font-size: 1.1rem;
+  font-family: "Archivo Black", sans-serif;
+}
+
+/* Estilo para destacar as notas que FAZEM PARTE da escala */
+.note-in-scale {
+  background-color: #ced4da !important; /* Um verde forte ou outra cor de sua preferência */
+  color: rgb(0, 0, 0) !important;
+  font-weight: bold;
+  border: 1.4px solid #000000 !important;
+}
+
+/* Garante que o C inicial (Tônica) também seja destacado */
+.note-in-scale.note-cell:first-child {
+  background-color: #d5e900 !important; /* Mantém a Tônica com uma cor principal (azul) */
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+button:hover {
+  background-color: #0056b3;
+}
+.output-section {
+  margin-top: 30px;
+}
+#escalaResultado,
+#campoHarmonicoResultado {
+  white-space: pre-wrap;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 1.2rem;
+  background-color: #f1f3f5;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 0;
+  border-left: 5px solid #007bff;
+  line-height: 1.6;
+}
+
+/* Estilização da Tabela de Intervalos */
+.interval-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.interval-table th,
+.interval-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px 5px;
+  text-align: center;
+}
+.interval-table th {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+.interval-table .table-title {
+  background-color: #495057;
+  color: white;
+  font-size: 1.1em;
+  padding: 10px;
+}
+.note-cell {
+  background-color: #ced4da;
+  font-weight: bold;
+}
+.semitone-cell {
+  background-color: #e9ecef;
+  color: #495057;
+  font-size: 0.9em;
+}
+.degree-cell {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #ff0000;
+}
+
+/* Estilos para a Tabela Geral de Estruturas de Escalas */
+.general-scale-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.9em;
+}
+.general-scale-table th,
+.general-scale-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px 5px;
+  text-align: center;
+}
+.general-scale-table th {
+  background-color: #495057;
+  color: white;
+}
+.scale-name-cell {
+  text-align: left;
+  font-weight: bold;
+  background-color: #f8f9fa;
+  color: #007bff;
+  width: 20%;
+}
+.interval-value-cell {
+  font-family: monospace;
+}
+
+.flex-output {
+  display: flex;
+  gap: 20px; /* Espaço entre as duas caixas de resultado */
+  margin-top: 20px;
+  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+}
+
+.output-box {
+  flex: 1; /* Permite que a caixa cresça e ocupe o espaço */
+  min-width: 300px; /* Garante que não fiquem muito estreitas em telas menores */
+}
+
+.output-box h2 {
+  margin-top: 0; /* Remove margem superior desnecessária dentro da caixa */
+}
+
+/*************************************** Container do Teclado ********************************************/
+#tecladoVirtualContainer {
+  /* Removido display: flex; e justify-content: center; pois a centralização será feita no wrapper interno */
+  margin: 30px auto 0 auto; /* Centraliza o wrapper interno */
+  position: relative;
+  height: 300px; /* Aumentei a altura para melhor visualização */
+  overflow-x: auto; /* Garante que teclados muito longos sejam roláveis, se necessário */
+}
+
+/* Estilo Base da Tecla */
+.tecla {
+  position: absolute; /* Essencial para o posicionamento em camadas */
+  border: 1px solid #e3e3e3;
+  cursor: default;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  border-radius: 0 0 5px 5px;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  transition: background-color 0.2s; /* Animação suave para destaque */
+}
+
+/* Tecla Branca */
+.tecla.branca {
+  width: 40px;
+  height: 120px;
+  background-color: white;
+  z-index: 1;
+  top: 0; /* Começa no topo */
+}
+
+/* Tecla Preta */
+.tecla.preta {
+  width: 25px;
+  height: 90px;
+  background-color: black;
+  color: white;
+  z-index: 2; /* Fica por cima das brancas */
+  top: 0;
+  pointer-events: none; /* Ignora cliques para não atrapalhar a tecla branca abaixo */
+  margin-left: -12.5px; /* Centraliza sobre a borda entre as brancas (25px de largura) */
+  padding-bottom: 2px;
+  font-size: 0.8em;
+}
+
+/* Classes para Destaque (Notas da Escala) */
+.tecla.destaque-branca {
+  background-color: #d5e900 !important; /* Verde */
+  color: rgb(0, 0, 0) !important;
+  border: 1px solid rgb(255, 255, 255);
+}
+
+.tecla.destaque-preta {
+  background-color: #6e7800 !important; /* Amarelo Escuro */
+  color: rgb(255, 255, 255) !important;
+    border: 1px solid rgb(255, 255, 255);
+}
