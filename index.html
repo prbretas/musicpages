@@ -14,6 +14,38 @@
 
 <body>
     <div class="container">
+
+        <div id="metronomeContainer" class="metronome-group">
+            <h2 style="margin-top: 0;">Metrônomo Digital</h2>
+            
+            <div class="metronome-controls">
+                <div class="input-field">
+                    <label for="bpmInput">Tempo (BPM):</label>
+                    <input type="number" id="bpmInput" value="120" min="40" max="300" onchange="updateMetronomeDisplay()">
+                </div>
+                
+                <div class="metronome-display" id="metronomeDisplay">120 BPM</div>
+                
+                <button id="startStopButton" onclick="startStopMetronome()">
+                    ▶ Iniciar
+                </button>
+            </div>
+            <div class="metronome-presets">
+                <div class="preset-group">
+                    <button class="preset-btn slow" onclick="setBPM(60)">Grave / Largo (60)</button>
+                    <button class="preset-btn slow" onclick="setBPM(72)">Adagio (72)</button>
+                    <button class="preset-btn moderate" onclick="setBPM(96)">Andante (96)</button>
+                </div>
+                <div class="preset-group">
+                    <button class="preset-btn moderate" onclick="setBPM(120)">Moderato (120)</button>
+                    <button class="preset-btn fast" onclick="setBPM(144)">Allegro (144)</button>
+                    <button class="preset-btn fast" onclick="setBPM(180)">Presto (180)</button>
+                </div>
+            </div>
+            <div id="clickIndicator" class="click-indicator"></div>
+        </div>
+
+
         <h1>🎹 Transpositor de Escalas Musicais</h1>
 
         <div class="input-group">
@@ -56,6 +88,7 @@
                     <option value="diminuta_tom_e_semitom">Diminuta (T-S)</option>
                     <option value="diminuta_semitom_e_tom">Diminuta (S-T)</option>
                     <option value="tons_inteiros">Tons Inteiros</option>
+                    <option value="cromatica">Cromática</option>
                 </optgroup>
             </select>
 
@@ -85,8 +118,6 @@
                 comuns e modos gregos.
             </p>
             <div id="tabelaGeralEscalasResultado">Aguardando geração...</div>
-
-
         </div>
 
         <div id="tecladoVirtualContainer">

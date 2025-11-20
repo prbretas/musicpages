@@ -195,11 +195,10 @@ button:hover {
 
 /*************************************** Container do Teclado ********************************************/
 #tecladoVirtualContainer {
-  /* Removido display: flex; e justify-content: center; pois a centralização será feita no wrapper interno */
-  margin: 30px auto 0 auto; /* Centraliza o wrapper interno */
+  margin: 30px auto 0 auto; 
   position: relative;
-  height: 300px; /* Aumentei a altura para melhor visualização */
-  overflow-x: auto; /* Garante que teclados muito longos sejam roláveis, se necessário */
+  height: 300px; 
+  overflow-x: auto;
 }
 
 /* Estilo Base da Tecla */
@@ -235,8 +234,7 @@ button:hover {
   color: white;
   z-index: 2; /* Fica por cima das brancas */
   top: 0;
-  pointer-events: none; /* Ignora cliques para não atrapalhar a tecla branca abaixo */
-  margin-left: -12.5px; /* Centraliza sobre a borda entre as brancas (25px de largura) */
+  /*pointer-events: none; /* Ignora cliques para não atrapalhar a tecla branca abaixo */
   padding-bottom: 2px;
   font-size: 0.8em;
 }
@@ -245,11 +243,109 @@ button:hover {
 .tecla.destaque-branca {
   background-color: #d5e900 !important; /* Verde */
   color: rgb(0, 0, 0) !important;
-  border: 1px solid rgb(255, 255, 255);
+  border: 1px solid rgb(0, 0, 0);
 }
 
 .tecla.destaque-preta {
   background-color: #6e7800 !important; /* Amarelo Escuro */
   color: rgb(255, 255, 255) !important;
     border: 1px solid rgb(255, 255, 255);
+}
+
+
+/*************************************** Estilos do Metrônomo ********************************************/
+.metronome-group {
+  margin-bottom: 25px; /* INSERIDO: Espaçamento após o metrônomo */
+  padding: 15px;
+  background-color: #e9f4ff; /* INSERIDO: Cor de fundo suave */
+  border: 1px solid #b3d9ff; /* INSERIDO: Borda para destacar */
+  border-radius: 8px;
+  text-align: center;
+}
+
+.metronome-controls {
+    display: flex; /* INSERIDO: Alinhamento horizontal dos controles */
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.metronome-controls button {
+    height: 50px; /* INSERIDO: Altura padronizada */
+    font-size: 1.1rem;
+    padding: 10px 25px;
+}
+
+.metronome-presets {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Espaço entre os grupos de botões */
+    flex-wrap: wrap; /* Para garantir que caibam em telas menores */
+}
+
+.preset-group {
+    display: flex;
+    gap: 10px; /* Espaço entre os botões dentro do grupo */
+}
+
+.preset-btn {
+    background-color: #f0f0f0;
+    color: #495057;
+    border: 1px solid #ced4da;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, transform 0.1s;
+    white-space: nowrap; /* Evita quebra de linha no texto do botão */
+}
+
+.preset-btn:hover {
+    background-color: #e9ecef;
+    transform: translateY(-1px);
+}
+
+/* INSERIDO: Cores sutis baseadas no andamento */
+.preset-btn.slow {
+    border-color: #28a745; /* Verde */
+}
+
+.preset-btn.moderate {
+    border-color: #ffc107; /* Amarelo */
+}
+
+.preset-btn.fast {
+    border-color: #dc3545; /* Vermelho */
+}
+
+#bpmInput {
+    width: 80px; /* INSERIDO: Largura para o input de BPM */
+    height: 50px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.metronome-display {
+    font-size: 1.4rem; /* INSERIDO: Tamanho maior para o BPM atual */
+    font-weight: bold;
+    color: #007bff;
+    padding: 5px 10px;
+    min-width: 100px;
+}
+
+.click-indicator {
+    width: 20px; /* INSERIDO: Indicador visual do clique */
+    height: 20px;
+    background-color: transparent;
+    border-radius: 50%;
+    margin: 15px auto 0;
+    transition: background-color 0.05s; /* Transição rápida para o flash */
+}
+
+/* Classe para o "flash" no indicador */
+.click-indicator.flash {
+    background-color: #ff0000; /* INSERIDO: Cor vermelha para o clique */
 }
