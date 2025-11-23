@@ -5,46 +5,68 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transpositor de Escalas Musicais</title>
-    <script src="./script.js"></script>
+    <script src="./script.js" defer></script>
+    <script src="./script-metronome.js" defer></script>
+    <script src="./script-keys.js" defer></script>
+    <script src="./script-escalas.js" defer></script>
+    <script src="./script-tabinter.js" defer></script>
     <link rel="stylesheet" href="style.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bungee+Spice&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bungee+Spice&display=swap"
+        rel="stylesheet" />
 </head>
 
 <body>
     <div class="container">
-
         <div id="metronomeContainer" class="metronome-group">
-            <h2 style="margin-top: 0;">Metrônomo Digital</h2>
-            
+            <h2 style="margin-top: 0">Metrônomo Digital</h2>
+
             <div class="metronome-controls">
                 <div class="input-field">
                     <label for="bpmInput">Tempo (BPM):</label>
-                    <input type="number" id="bpmInput" value="120" min="40" max="300" onchange="updateMetronomeDisplay()">
+                    <input type="number" id="bpmInput" value="120" min="40" max="300"
+                        onchange="updateMetronomeDisplay()" />
                 </div>
-                
+
                 <div class="metronome-display" id="metronomeDisplay">120 BPM</div>
-                
+
                 <button id="startStopButton" onclick="startStopMetronome()">
                     ▶ Iniciar
                 </button>
             </div>
             <div class="metronome-presets">
                 <div class="preset-group">
-                    <button class="preset-btn slow" onclick="setBPM(60)">Grave / Largo (60)</button>
-                    <button class="preset-btn slow" onclick="setBPM(72)">Adagio (72)</button>
-                    <button class="preset-btn moderate" onclick="setBPM(96)">Andante (96)</button>
+                    <button class="preset-btn slow" onclick="setBPM(20)">
+                        Grave (20-40)
+                    </button>
+                    <button class="preset-btn slow" onclick="setBPM(45)">
+                        Largo (45-50)
+                    </button>
+                    <button class="preset-btn moderate" onclick="setBPM(55)">
+                        Adagio (55-65)
+                    </button>
+                    <button class="preset-btn moderate" onclick="setBPM(75)">
+                        Andante (75-107)
+                    </button>
                 </div>
                 <div class="preset-group">
-                    <button class="preset-btn moderate" onclick="setBPM(120)">Moderato (120)</button>
-                    <button class="preset-btn fast" onclick="setBPM(144)">Allegro (144)</button>
-                    <button class="preset-btn fast" onclick="setBPM(180)">Presto (180)</button>
+                    <button class="preset-btn fast" onclick="setBPM(120)">
+                        Allegro (120)
+                    </button>
+                    <button class="preset-btn fast" onclick="setBPM(144)">
+                        Vivace (144)
+                    </button>
+                    <button class="preset-btn fast" onclick="setBPM(180)">
+                        Presto (180-200)
+                    </button>
+                    <button class="preset-btn fast" onclick="setBPM(200)">
+                        Prestissimo (200+)
+                    </button>
                 </div>
             </div>
             <div id="clickIndicator" class="click-indicator"></div>
         </div>
-
 
         <h1>🎹 Transpositor de Escalas Musicais</h1>
 
@@ -93,7 +115,7 @@
             </select>
 
             <button onclick="calcularEscala()">
-                Gerar Escala<br>Campo Harmônico
+                Gerar Escala<br />Campo Harmônico
             </button>
         </div>
 
@@ -120,9 +142,7 @@
             <div id="tabelaGeralEscalasResultado">Aguardando geração...</div>
         </div>
 
-        <div id="tecladoVirtualContainer">
-        </div>
-    </div>
+        <div id="tecladoVirtualContainer"></div>
 </body>
 
 </html>

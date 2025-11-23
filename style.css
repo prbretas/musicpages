@@ -78,7 +78,7 @@ h2 {
 
 /* Garante que o C inicial (Tônica) também seja destacado */
 .note-in-scale.note-cell:first-child {
-  background-color: #d5e900 !important; /* Mantém a Tônica com uma cor principal (azul) */
+  background-color: #d5e900 !important; /* Mantém a Tônica com uma cor principal (amarelo/verde neon) */
 }
 
 button {
@@ -146,7 +146,24 @@ button:hover {
 .degree-cell {
   background-color: #f8f9fa;
   font-weight: bold;
-  color: #ff0000;
+  /* CORREÇÃO: Removendo cor vermelha padrão para aplicar o destaque apenas nas células com 'note-in-scale' */
+  color: #343a40; 
+}
+/* Estilo Específico para a Nomenclatura do Grau (Linha 3) - Aplica a cor vermelha APENAS quando for nota da escala */
+.degree-cell.note-in-scale {
+    color: #ff0000 !important;
+}
+
+/* NOVO ESTILO: Para a última linha de números, aplica o destaque (fundo) e a cor vermelha (texto) */
+.semitones-number-cell {
+    background-color: #f8f9fa; /* Fundo padrão */
+    font-weight: bold;
+    color: #343a40; /* Cor padrão */
+}
+.semitones-number-cell.note-in-scale {
+    background-color: #ced4da !important; /* Destaque de fundo (igual ao 'note-in-scale') */
+    color: #ff0000 !important; /* Cor vermelha para o texto */
+    border: 1.4px solid #000000 !important;
 }
 
 /* Estilos para a Tabela Geral de Estruturas de Escalas */
