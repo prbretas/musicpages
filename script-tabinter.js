@@ -1,4 +1,8 @@
-
+/**
+ * CRIA UM ARRAY AUXILIAR que lista as 12 notas cromáticas, em ordem.
+ * Onde notas alteradas em # ficam no index impar, e em b ficam na lista notasEnarmonicas
+ * (Funções e constantes como notasCromaticas e notasEnarmonicas são importadas via script-escalasNEW.js)
+ */
 
 /**
  * Cria a Tabela de Intervalos Dinâmica e aplica destaque.
@@ -8,11 +12,17 @@
  */
 function gerarTabelaDeIntervalos(tonicaIndex, escalaNotas, prefereBemol) {
   let html = `<table class="interval-table">`;
+  const tabelaContainer = document.getElementById("tabelaIntervalosResultado");
 
-  // CORREÇÃO: Usa o novo parâmetro e a nova função auxiliar para definir a nomenclatura
+  // A Tabela é construída sempre a partir da Tônica (0 semitons) até a Oitava (12 semitons)
   const notasParaTabela = [];
+  const grausParaTabela = [];
+  
+  // LINHA 1: Nomes das Notas
   for (let i = 0; i <= 12; i++) {
     const absoluteIndex = (tonicaIndex + i) % 12;
+    
+    // Obtém o nome da nota com base na preferência (Função global de script-escalasNEW.js)
     let nota = getCorrectedNoteName(absoluteIndex, prefereBemol);
     
     // A tônica (i=0) e a oitava (i=12) devem usar o nome corrigido da própria tônica.
@@ -21,67 +31,69 @@ function gerarTabelaDeIntervalos(tonicaIndex, escalaNotas, prefereBemol) {
     }
     
     notasParaTabela.push(nota);
+    
+    // Obtém o nome do grau (Ex: "3ªb", "5ª")
+    const grauObj = nomenclaturaGrausIntervalos.find(g => g.semitons === i);
+    grausParaTabela.push(grauObj ? grauObj.grau : i); // Usa o número de semitons como fallback
   }
 
 
-  // CRIA UM ARRAY AUXILIAR para todas as representações possíveis da escala (ex: F# e Gb)
+  // CRUCIAL PARA O DESTAQUE: Cria um array com todas as representações enharmônicas válidas
   let escalaNotasEnarmonicas = [...escalaNotas];
   
-  // Adiciona as enarmonias das notas da escala para o destaque funcionar corretamente
+  // Adiciona as enarmônicas das notas da escala.
   escalaNotas.forEach(nota => {
-    // 1. Tenta encontrar a versão bemol
-    const indexSustenido = notasCromaticas.indexOf(nota);
-    if (indexSustenido !== -1 && notasEnarmonicas[indexSustenido]) {
-      // Adiciona a versão bemol (se a nota da escala for sustenido)
-      escalaNotasEnarmonicas.push(notasEnarmonicas[indexSustenido]);
-    }
-    
-    // 2. Tenta encontrar a versão sustenido
-    const indexBemol = notasEnarmonicasInvertido[nota];
-    if (indexBemol !== undefined && notasCromaticas[indexBemol]) {
-      // Adiciona a versão sustenido (se a nota da escala for bemol)
-      escalaNotasEnarmonicas.push(notasCromaticas[indexBemol]);
-    }
+      const index = getChromaticIndex(nota); // Usa função global de script-escalasNEW.js
+      if (index !== -1) {
+          // Tenta adicionar a versão bemol
+          if (notasEnarmonicas[index] && notasEnarmonicas[index] !== nota) {
+              escalaNotasEnarmonicas.push(notasEnarmonicas[index]);
+          } 
+          // Tenta adicionar a versão sustenido
+          const sharpName = notasCromaticas[index]; 
+          if (sharpName && sharpName !== nota) {
+               escalaNotasEnarmonicas.push(sharpName);
+          }
+      }
   });
 
+  // Limpa o array e garante que todas as notas estejam em MAIÚSCULAS para comparação segura.
+  escalaNotasEnarmonicas = Array.from(new Set(escalaNotasEnarmonicas.map(n => n.toUpperCase())));
 
-  // LINHA 1: Notas Musicais (Cromáticas a partir da Tônica)
-  html += `<thead><tr><th colspan="13" class="table-title">Tabela de Intervalos: ${getCorrectedNoteName(tonicaIndex, prefereBemol)+ " "+ cScaleName}</th></tr></thead>`;
-  html += `<tbody><tr>`;
 
-  for (let i = 0; i <= 12; i++) {
-    // Para o destaque, precisamos do nome da nota que está sendo renderizada (notaDaTabela)
-    const notaDaTabela = notasParaTabela[i]; 
+  // --- INÍCIO DA MONTAGEM HTML ---
 
-    // Lógica de Destaque CORRIGIDA: Usa o array de notas enarmônicas (que contem as duas versões)
-    let classeDestaque = "";
-    if (escalaNotasEnarmonicas.includes(notaDaTabela)) {
-      classeDestaque = "note-in-scale";
-    }
-
-    // A Tônica (i=0 e i=12)
-    html += `<td class="note-cell ${classeDestaque}">${notaDaTabela}</td>`;
-  }
-  html += `</tr>`;
-
-  
-  // LINHA 2: Nomenclatura do Grau (T, 2b, 2, 3b, ...)
+  // LINHA 1: Nomes das Notas (C, C#, D, D#, ...)
   html += `<tr>`;
-  for (let i = 0; i <= 12; i++) {
-    let grauNome;
-    if (i === 12) {
-      grauNome = "8ª"; // Oitava
-    } else {
-      grauNome = nomenclaturaGrausIntervalos[i].grau;
-    }
+  notasParaTabela.forEach((nota, index) => {
+    // A comparação agora usa o array aprimorado escalaNotasEnarmonicas
+    const notaUpper = nota.toUpperCase().replace(/X/g, '##'); // Trata duplo sustenido (G##)
     
-    const notaDaTabela = notasParaTabela[i];
-
-    // Lógica de Destaque
-    const classeDestaque = (escalaNotasEnarmonicas.includes(notaDaTabela))
+    const classeDestaque = (escalaNotasEnarmonicas.includes(notaUpper))
       ? "note-in-scale"
       : "";
-    // A classe do grau é 'degree-cell', mas o destaque deve ser aplicado.
+
+    // Adiciona a classe especial para a Tônica
+    const classeTonica = index === 0 ? "tonic-note" : "";
+
+    html += `<td class="note-cell ${classeDestaque} ${classeTonica}">${nota}</td>`;
+  });
+  html += `</tr>`;
+
+
+  // LINHA 2: Graus/Intervalos (T, 2ªb, 2ª, 3ªb, ...)
+  html += `<tr>`;
+  for (let i = 0; i <= 12; i++) {
+    const grauNome = grausParaTabela[i];
+    const notaDaTabela = notasParaTabela[i]; // Nota correspondente na linha 1
+    
+    const notaUpper = notaDaTabela.toUpperCase().replace(/X/g, '##');
+
+    // A lógica de destaque do grau deve ser a mesma da nota.
+    const classeDestaque = (escalaNotasEnarmonicas.includes(notaUpper))
+      ? "note-in-scale"
+      : "";
+    
     html += `<td class="degree-cell ${classeDestaque}">${grauNome}</td>`;
   }
   html += `</tr>`;
@@ -91,39 +103,18 @@ function gerarTabelaDeIntervalos(tonicaIndex, escalaNotas, prefereBemol) {
   for (let i = 0; i <= 12; i++) {
     const notaDaTabela = notasParaTabela[i];
     
+    const notaUpper = notaDaTabela.toUpperCase().replace(/X/g, '##');
+
     // Lógica de Destaque
-    const classeDestaque = (escalaNotasEnarmonicas.includes(notaDaTabela))
+    const classeDestaque = (escalaNotasEnarmonicas.includes(notaUpper))
       ? "note-in-scale"
       : "";
       
-    html += `<td class="semitone-cell ${classeDestaque}">${i/2}</td>`;
+    html += `<td class="semitone-cell ${classeDestaque}">${i}</td>`;
   }
   html += `</tr>`;
 
-
-  // LINHA 4: Numerações (0, 1, 2, 3, ...) - Mantida para consistência com o script original
-  html += `<tr>`;
-  for (let i = 0; i <= 12; i++) {
-    let grauNumero;
-    if (i === 12) {
-      grauNumero = "12"; // 12 semitons
-    } else {
-      grauNumero = i;
-    }
-    
-    const notaDaTabela = notasParaTabela[i];
-
-    // Lógica de Destaque: Aplica a classe apenas na célula com a nota destacada
-    const classeDestaque = (escalaNotasEnarmonicas.includes(notaDaTabela))
-      ? "note-in-scale"
-      : "";
-      
-    // Aplica a nova classe 'semitones-number-cell' para a estilização específica
-    html += `<td class="semitones-number-cell ${classeDestaque}">${grauNumero}</td>`;
-  }
-  html += `</tr>`;
-
-  html += ` </tbody></table>`;
-
-  document.getElementById("tabelaIntervalosResultado").innerHTML = html;
+  // --- FIM DA MONTAGEM HTML ---
+  html += `</table>`;
+  tabelaContainer.innerHTML = html;
 }

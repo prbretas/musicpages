@@ -25,11 +25,11 @@ const notasEnarmonicas = {
 
 // NOVO: Mapeamento Invertido para lidar com input de tônica em bemol (Ex: 'Eb')
 const notasEnarmonicasInvertido = {
-  "Db": 1, 
-  "Eb": 3, 
-  "Gb": 6, 
-  "Ab": 8, 
-  "Bb": 10,
+  "DB": 1, // Corrigido para UPPECASE
+  "EB": 3, // Corrigido para UPPECASE
+  "GB": 6, // Corrigido para UPPECASE
+  "AB": 8, // Corrigido para UPPECASE
+  "BB": 10, // Corrigido para UPPECASE
 };
 
 // Nomenclatura dos Graus
@@ -275,7 +275,7 @@ const campoHarmonicoCromatico = [
 // ---------------- FUNÇÕES DE CÁLCULO MUSICAL --------------
 
 /**
- * NOVO: Determina o nome correto da nota (Sustenido ou Bemol) baseado na preferência da escala (useFlats).
+ * Determina o nome correto da nota (Sustenido ou Bemol) baseado na preferência da escala (useFlats).
  * @param {number} absoluteIndex - Índice cromático da nota (0-11).
  * @param {boolean} useFlats - Se for true, prefere a notação em bemol (Db, Eb, Gb, Ab, Bb).
  * @returns {string} O nome correto da nota.
@@ -409,16 +409,22 @@ function gerarCampoHarmonico(tonicaIndex, tipoEscala) {
 
   for (let i = 0; i < estruturaCH.length; i++) {
     const grau = estruturaCH[i];
+    
+    // Tenta buscar a estrutura de acorde pelo nome da qualidade exata (Maj7, mMaj7, dim7, etc.)
+    let qualidadeAcorde = estruturasAcordes[grau.qualidade];
 
-    // Assegura que o acorde é buscado corretamente (ex: Maj7#5 vira Maj7)
-    const qualidadeChave = grau.qualidade
-      .replace("º", "m7b5")
-      .replace("+", "")
-      .replace("#5", "");
-
-    // Pega a estrutura de semitons do acorde (Ex: [4, 7, 11] para Maj7)
-    const qualidadeAcorde = estruturasAcordes[qualidadeChave];
-
+    // Se o nome da qualidade exata (grau.qualidade) não foi encontrado,
+    // usa a lógica de substituição para buscar a estrutura base (para graus com símbolos especiais)
+    if (!qualidadeAcorde) {
+        // Ex: viiº -> m7b5 (para CHs que usam m7b5 no viiº, como o Major)
+        const qualidadeChaveSimplificada = grau.qualidade
+          .replace("º", "m7b5")
+          .replace("+", "")
+          .replace("#5", "");
+        
+        qualidadeAcorde = estruturasAcordes[qualidadeChaveSimplificada];
+    }
+    
     if (!qualidadeAcorde) {
       output += `${grau.grau} - ${notasCromaticas[currentIndex]}${grau.qualidade} (Estrutura de acorde desconhecida - Verifique estruturasAcordes)\n`;
     } else {
@@ -458,46 +464,38 @@ function calcularEscala() {
   let prefereBemolParaTodaEscala = false;
 
 
-  // 1. Lógica para aceitar input em bemol e determinar a preferência de notação
-  tonicaIndex = notasCromaticas.indexOf(tonicaInput);
+  // 1. Lógica para encontrar o índice da tônica (lidando com # e b)
+  tonicaIndex = notasCromaticas.indexOf(tonicaInput); // Tenta Sustenido/Natural
   
   if (tonicaIndex === -1) {
-    // Tenta encontrar o índice da tônica na versão bemol
+    // Tenta encontrar o índice da tônica na versão bemol (Mapeamento Invertido)
     const indexBemol = notasEnarmonicasInvertido[tonicaInput];
     if (indexBemol !== undefined) {
       tonicaIndex = indexBemol;
-      prefereBemolParaTodaEscala = true; // Se o input é bemol (ex: Eb), prefere bemol
     } else {
       alert(
           "Tônica não reconhecida. Use Sustenidos (#), Bemóis (b) ou a notação padrão (C, D, E, F, G, A, B)."
       );
       return;
     }
-  } else {
-    // Se o input é sustenido ou natural, verifica se está no grupo de bemóis
-    const tonicasQueUsamBemol = new Set(['F', 'BB', 'EB', 'AB', 'DB', 'GB']); // Usando BB, EB... por causa do .toUpperCase()
-    
-    if (tonicaInput === 'F' || tonicaInput.includes('B') || tonicaInput.includes('E') || tonicaInput.includes('A') || tonicaInput.includes('D') || tonicaInput.includes('G')) {
-        // Regra heurística: Se a tônica for F ou se for uma nota acidental que pode ser bemol
-        if(tonicasQueUsamBemol.has(tonicaInput) || tonicaInput.length === 2 && tonicaInput.includes('B')) { // Cobre F e a maioria dos bemóis
-             prefereBemolParaTodaEscala = true;
-        }
-    }
-    
-    // Simplificação da regra musical: Se a tônica é F, Bb, Eb, Ab, Db, Gb (índices 5, 10, 3, 8, 1, 6) usa bemol
-    if (tonicaIndex === 5 || tonicaIndex === 1 || tonicaIndex === 3 || tonicaIndex === 6 || tonicaIndex === 8 || tonicaIndex === 10) {
-        // Se o usuário digitou F# (índice 6) prefere-se sustenido. Se digitou Gb (índice 6) prefere-se bemol.
-        // Já que não temos o input original (F# vs Gb), a forma mais segura é:
-        // Se a tônica *começa* a escala de sustenidos (C, G, D, A, E, B, F#), usa sustenido.
-        // Se não for (F, Bb, Eb, Ab, Db, Gb), usa bemol.
-        
-        const sharpTonicIndices = [0, 7, 2, 9, 4, 11]; // C, G, D, A, E, B
-        if (!sharpTonicIndices.includes(tonicaIndex) && tonicaIndex !== 6) { // Todos os acidentais exceto F# (6)
-             prefereBemolParaTodaEscala = true;
-        }
-        
-    }
   }
+  
+  // 2. NOVA Lógica Definitiva da Armadura de Clave (Círculo de Quintas)
+  // Tônicas que tradicionalmente usam bemóis (índices): Db(1), Eb(3), F(5), Gb(6), Ab(8), Bb(10)
+  const tonicIndicesQueUsamBemois = new Set([1, 3, 5, 6, 8, 10]); 
+  
+  // Verifica se o índice da tônica é um dos que usam bemóis na armadura de clave
+  if (tonicIndicesQueUsamBemois.has(tonicaIndex)) {
+      const inputContemSustenido = tonicaInput.includes('#');
+      const isEnharmonicSixth = tonicaIndex === 6; // F# / Gb
+      
+      // Regra: Prefere bemol, a menos que seja o caso enharmônico (índice 6)
+      // E o usuário tenha explicitamente digitado com '#'.
+      if (!(isEnharmonicSixth && inputContemSustenido)) {
+           prefereBemolParaTodaEscala = true;
+      }
+  }
+  // Outras tônicas (C, G, D, A, E, B) usam sustenidos.
 
 
   // Lógica para obter o nome da escala (código original, sem alterações)
