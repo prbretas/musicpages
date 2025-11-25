@@ -5,12 +5,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Transpositor de Escalas Musicais</title>
+     <!--------------- SCRIPTS ------------->
     <script src="./script.js" defer></script>
     <script src="./script-metronome.js" defer></script>
     <script src="./script-escalasNEW.js" defer></script>
     <script src="./script-keys.js" defer></script>
     <script src="./script-tabinter.js" defer></script>
-    <link rel="stylesheet" href="style.css" />
+    <!--------------- STYLES ----------------->
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style-responsive.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bungee+Spice&display=swap"
@@ -25,7 +28,7 @@
             <div class="metronome-controls">
                 <div class="input-field">
                     <label for="bpmInput">Tempo (BPM):</label>
-                    <input type="number" id="bpmInput" value="120" min="40" max="300"
+                    <input type="number" id="bpmInput" value="120" min="20" max="300"
                         onchange="updateMetronomeDisplay()" />
                 </div>
 
@@ -37,7 +40,7 @@
             </div>
             <div class="metronome-presets">
                 <div class="preset-group">
-                    <button class="preset-btn slow" onclick="setBPM(20)">
+                    <button class="preset-btn slow" onclick="setBPM(30)">
                         Grave (20-40)
                     </button>
                     <button class="preset-btn slow" onclick="setBPM(45)">

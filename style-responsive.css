@@ -1,0 +1,200 @@
+/*
+ * style-responsive.css
+ * Regras de Media Query para Responsividade
+ */
+
+@media (max-width: 256px) {
+  /* Layout Geral */
+  .container {
+    padding: 15px;
+    border-radius: 0; /* Remove bordas arredondadas em telas cheias */
+    box-shadow: none; /* Remove sombra em telas pequenas */
+  }
+
+  /* Títulos e Espaçamento */
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 15px;
+  }
+
+  /* Controles de Input e Botões */
+  .input-group,
+  .metronome-controls {
+    flex-direction: column; /* Pilha verticalmente */
+    align-items: stretch;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .input-field {
+    width: 100%; /* Ocupa a largura total */
+  }
+
+  .input-field input,
+  .input-field select,
+  .input-group button {
+    width: 100%;
+    box-sizing: border-box; /* Inclui padding e borda na largura total */
+  }
+
+  .input-field label {
+    margin-bottom: 5px;
+  }
+
+  /* Seções de Output */
+  .flex-output {
+    flex-direction: column; /* Pilha as caixas de output */
+  }
+
+  .output-box {
+    width: 100%;
+  }
+
+  /* Teclado Virtual (Garante que a tecla toque a borda) */
+  #tecladoVirtualContainer {
+    overflow-x: auto; /* Permite rolagem horizontal */
+    padding-bottom: 20px; /* Margem para a sombra do teclado */
+  }
+
+  /* Tabela de Intervalos */
+  .interval-table {
+    font-size: 0.8rem;
+    width: 100%;
+    /* Permite a rolagem da tabela se o conteúdo for muito apertado */
+    display: block;
+    overflow-x: auto;
+  }
+
+  .interval-table td {
+    min-width: 40px; /* Garante que as células não fiquem muito pequenas */
+    padding: 4px 6px;
+  }
+
+  .preset-group {
+    flex-direction: column;
+  }
+    .input-field {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #startStopButton {
+    padding: 10px;
+  }
+}
+
+/* ========================================================================= */
+/* 📱 Dispositivos Móveis e Telas Pequenas (Max-width: 768px) */
+/* ========================================================================= */
+@media (max-width: 768px) {
+  /* Layout Geral */
+  .container {
+    padding: 15px;
+    border-radius: 0; /* Remove bordas arredondadas em telas cheias */
+    box-shadow: none; /* Remove sombra em telas pequenas */
+  }
+
+  /* Títulos e Espaçamento */
+  h1 {
+    font-size: 1.8rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 15px;
+  }
+
+  /* Controles de Input e Botões */
+  .input-group,
+  .metronome-controls {
+    flex-direction: column; /* Pilha verticalmente */
+    align-items: stretch;
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .input-field {
+    width: 100%; /* Ocupa a largura total */
+  }
+
+  .input-field input,
+  .input-field select,
+  .input-group button {
+    width: 100%;
+    box-sizing: border-box; /* Inclui padding e borda na largura total */
+  }
+
+  .input-field label {
+    margin-bottom: 5px;
+  }
+
+  /* Seções de Output */
+  .flex-output {
+    flex-direction: column; /* Pilha as caixas de output */
+  }
+
+  .output-box {
+    width: 100%;
+  }
+
+  /* Teclado Virtual (Garante que a tecla toque a borda) */
+  #tecladoVirtualContainer {
+    overflow-x: auto; /* Permite rolagem horizontal */
+    padding-bottom: 20px; /* Margem para a sombra do teclado */
+  }
+
+  /* Tabela de Intervalos */
+  .interval-table {
+    font-size: 0.8rem;
+    width: 100%;
+    /* Permite a rolagem da tabela se o conteúdo for muito apertado */
+    display: block;
+    overflow-x: auto;
+  }
+
+  .interval-table td {
+    min-width: 40px; /* Garante que as células não fiquem muito pequenas */
+    padding: 4px 6px;
+  }
+  .preset-group {
+    flex-direction: column;
+  }
+
+  .input-field {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #startStopButton {
+    padding: 10px;
+  }
+}
+
+/* ========================================================================= */
+/* 💻 Telas Médias/Laptops (Min-width: 769px e Max-width: 1024px) */
+/* Ajustes finos para balancear o layout original em telas intermediárias */
+/* ========================================================================= */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    max-width: 95%; /* Usa mais da largura da tela */
+    padding: 20px;
+  }
+
+  .input-group {
+    gap: 10px; /* Reduz o espaço entre os inputs */
+  }
+
+  /* Ajuste para o Metrônomo */
+  .metronome-controls {
+    flex-wrap: wrap; /* Permite quebrar linha se necessário */
+    justify-content: space-around;
+  }
+}

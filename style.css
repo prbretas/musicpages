@@ -34,10 +34,14 @@ h2 {
   background-color: #f8f9fa;
   border: 1px solid #ced4da;
   border-radius: 8px;
+  
 }
 .input-field {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px;
 }
 .input-field input,
 .input-field select {
@@ -110,7 +114,7 @@ button:hover {
   line-height: 1.6;
 }
 
-/* Estilização da Tabela de Intervalos */
+/*************************** Estilização da Tabela de Intervalos **********************************/
 .interval-table {
   width: 100%;
   border-collapse: collapse;
@@ -305,6 +309,7 @@ button:hover {
 .preset-group {
     display: flex;
     gap: 10px; /* Espaço entre os botões dentro do grupo */
+    flex-wrap: wrap   ;
 }
 
 .preset-btn {
@@ -340,7 +345,6 @@ button:hover {
 #bpmInput {
     width: 80px; /* INSERIDO: Largura para o input de BPM */
     height: 50px;
-    text-align: center;
     font-size: 1.2rem;
     font-weight: bold;
 }

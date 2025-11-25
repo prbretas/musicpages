@@ -98,7 +98,23 @@ function gerarTabelaDeIntervalos(tonicaIndex, escalaNotas, prefereBemol) {
   }
   html += `</tr>`;
 
-  // LINHA 3: Semitons (0, 1, 2, 3, ...)
+  // LINHA 3: Semitons (0, 0.5,1.0,1.5,2.0,2.5, 3, ...)
+  html += `<tr>`;
+  for (let i = 0; i <= 12; i++) {
+    const notaDaTabela = notasParaTabela[i];
+    
+    const notaUpper = notaDaTabela.toUpperCase().replace(/X/g, '##');
+
+    // Lógica de Destaque
+    const classeDestaque = (escalaNotasEnarmonicas.includes(notaUpper))
+      ? "note-in-scale"
+      : "";
+      
+    html += `<td class="semitone-cell ${classeDestaque}">${i/2}</td>`;
+  }
+  html += `</tr>`;
+
+  // LINHA 4: PENSANDO EM NUMEROS INTEIROS (0, 1, 2, 3, ...)
   html += `<tr>`;
   for (let i = 0; i <= 12; i++) {
     const notaDaTabela = notasParaTabela[i];
