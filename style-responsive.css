@@ -55,8 +55,10 @@
 
   /* Teclado Virtual (Garante que a tecla toque a borda) */
   #tecladoVirtualContainer {
-    overflow-x: auto; /* Permite rolagem horizontal */
-    padding-bottom: 20px; /* Margem para a sombra do teclado */
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
+    justify-content: space-evenly;
   }
 
   /* Tabela de Intervalos */
@@ -144,8 +146,10 @@
 
   /* Teclado Virtual (Garante que a tecla toque a borda) */
   #tecladoVirtualContainer {
-    overflow-x: auto; /* Permite rolagem horizontal */
-    padding-bottom: 20px; /* Margem para a sombra do teclado */
+    display: flex;
+    flex-direction: column;    
+    align-items: center;
+    justify-content: space-evenly;
   }
 
   /* Tabela de Intervalos */
@@ -169,6 +173,11 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+   .input-group {        
     align-items: center;
     justify-content: space-between;
   }
@@ -197,4 +206,5 @@
     flex-wrap: wrap; /* Permite quebrar linha se necessário */
     justify-content: space-around;
   }
+  
 }

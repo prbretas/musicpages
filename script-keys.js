@@ -1,5 +1,6 @@
 /**
- * NOVO: Gera a visualização do teclado virtual (2 Oitavas Completas) centrado na tônica.
+ * NOVO: Gera a visualização do teclado virtual, ajustando o número de oitavas 
+ * de 2 para 1 em telas pequenas (<= 768px).
  * @param {string} tonicaInput - A tônica selecionada (Ex: 'C').
  * @param {Array<string>} escalaNotas - Array das notas da escala.
  */
@@ -9,30 +10,42 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
 
   container.innerHTML = "";
 
-  // --- Configuração do Teclado (2 Oitavas Completas) ---
-  // CORRIGIDO: Array estendido para 2 oitavas completas (C1 até C3), total de 25 notas.
-  const tecladoCompleto = [
-    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", // 1ª Oitava
-    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", // 2ª Oitava
-    "C", // C3 (Finaliza a 2ª oitava de forma completa)
-  ];
+  // --- 1. DETECÇÃO DE TELA E CONFIGURAÇÃO DO TECLADO ---
+  // Verifica se a largura da tela é igual ou menor que o breakpoint móvel (768px)
+  let isSmallScreen = window.innerWidth;    
+
+  let tecladoCompleto;
+  
+  if (isSmallScreen <= 550) {
+      // Teclado para telas pequenas: 1 Oitava e um pouco mais (C1 até F2) 
+      // para garantir a centralização visual da tônica, total de 18 notas.
+      tecladoCompleto = [
+          "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", 
+          "C"
+      ]; 
+  } else if (isSmallScreen <= 768) {
+      // Teclado para telas pequenas: 1 Oitava e um pouco mais (C1 até F2) 
+      // para garantir a centralização visual da tônica, total de 18 notas.
+      tecladoCompleto = [
+          "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", 
+          "C", "C#", "D", "D#", "E", "F" 
+      ]; 
+  } else {
+      // Teclado para telas maiores: 2 Oitavas completas (C1 até C3), total de 25 notas.
+      tecladoCompleto = [
+          "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", 
+          "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B", 
+          "C",
+      ];
+  }
 
   const tipoTeclas = {
-    C: "branca",
-    D: "branca",
-    E: "branca",
-    F: "branca",
-    G: "branca",
-    A: "branca",
-    B: "branca",
-    "C#": "preta",
-    "D#": "preta",
-    "F#": "preta",
-    "G#": "preta",
-    "A#": "preta",
+    "C": "branca", "D": "branca", "E": "branca", "F": "branca",
+    "G": "branca", "A": "branca", "B": "branca",
+    "C#": "preta", "D#": "preta", "F#": "preta", "G#": "preta", "A#": "preta",
   };
   
-  // LÓGICA DE DESTAQUE OTIMIZADA: Coleta os índices cromáticos de todas as notas da escala.
+  // LÓGICA DE DESTAQUE: Coleta os índices cromáticos das notas da escala.
   const escalaIndices = new Set();
   escalaNotas.forEach(nota => {
     const index = getChromaticIndex(nota); // Função global de script-escalasNEW.js
@@ -52,7 +65,7 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
   let htmlTeclasPretas = "";
   let offsetX = 0; // Posição horizontal acumulada (início da tecla branca)
 
-  // 2. Renderização da faixa completa de 2 oitavas (25 notas)
+  // --- 2. RENDERIZAÇÃO ---
   const notasParaRenderizar = tecladoCompleto.length; 
   let currentChromaticIndexTotal = 0; 
 
@@ -60,7 +73,7 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
     const notaCromatica = tecladoCompleto[currentChromaticIndexTotal];
     const tipo = tipoTeclas[notaCromatica];
 
-    // NOVO DESTAQUE: Verifica se o índice cromático da tecla está na escala.
+    // Verifica se o índice cromático da tecla está na escala.
     const notaIndex = getChromaticIndex(notaCromatica);
     const isNotaNaEscala = notaIndex !== -1 && escalaIndices.has(notaIndex);
     
@@ -89,7 +102,6 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
       offsetX += 40; // Largura da tecla branca
     } else if (tipo === "preta") {
       // Teclas Pretas
-      // leftPosition = (posição da branca anterior + 40) - 12
       const leftPosition = offsetX - 12; 
 
       htmlTeclasPretas += `<div 
@@ -103,7 +115,7 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
     currentChromaticIndexTotal++;
   }
 
-  // 3. Centralização do Teclado na Tônica (tonicaInput) 
+  // --- 3. CENTRALIZAÇÃO ---
   const faixaRenderizadaLargura = offsetX;
   let xPosicaoTonica = -1;
   let tempX = 0; // Acumulador de largura das teclas brancas
@@ -111,14 +123,13 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
   const tonicaParaCentralizar = notasCromaticas[tonicaIndex];
 
   // Cálculo da posição X da tônica (posição inicial na primeira oitava)
-  // Basta calcular a posição da tônica na primeira oitava (C1 a B1)
+  // Itera apenas sobre a primeira oitava (12 notas) para encontrar a posição da tônica.
   for (let i = 0; i < 12; i++) {
       const nota = tecladoCompleto[i];
       const tipo = tipoTeclas[nota];
 
       if (nota === tonicaParaCentralizar) {
            if (tipo === "preta") {
-               // Posição de start da branca anterior (tempX) - 12
                xPosicaoTonica = tempX - 12; 
            } else { // Branca
                xPosicaoTonica = tempX;
@@ -132,15 +143,23 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
   }
 
 
-  const centroVisual = 280; // Ponto central do container visível (estimado)
+  const centroVisual = 280; 
   let translateOffset = centroVisual - xPosicaoTonica;
 
   const innerWrapper = document.createElement("div");
   innerWrapper.style.position = "relative";
   innerWrapper.style.width = `${faixaRenderizadaLargura}px`;
-  innerWrapper.style.transform = `translateX(${translateOffset}px)`;
   innerWrapper.innerHTML = htmlTeclasBrancas + htmlTeclasPretas;
 
   container.innerHTML = "";
   container.appendChild(innerWrapper);
 }
+
+// 4. Lógica de Listener de Redimensionamento:
+// Adiciona um listener para recalcular o teclado ao redimensionar a tela (rotação do celular/redimensionamento do browser)
+window.addEventListener('resize', () => {
+    // Verifica se a função calcularEscala existe (é carregada por script-escalasNEW.js)
+    if (typeof calcularEscala === 'function') {
+        calcularEscala();
+    }
+});
