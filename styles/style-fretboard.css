@@ -1,0 +1,190 @@
+/* style-fretboard.css */
+/* Estilos para o Braço do Violão/Guitarra (Fretboard)
+*/
+
+/* Classes de Cores para Cada Nota (Mantidas) */
+.color-C { --note-color: #cd0000;}  
+.color-Cs { --note-color: #8d0000; } 
+.color-D { --note-color: #1717daff; }  
+.color-Ds { --note-color: #000084; } 
+.color-E { --note-color: #1cb11cff; }  
+.color-F { --note-color: #e2e200;}  
+.color-Fs { --note-color: #a7a700ff; } 
+.color-G { --note-color: #d76b00; }  
+.color-Gs { --note-color: #a05800ff; } 
+.color-A { --note-color: #6e00dcff; }  
+.color-As { --note-color: #510080; } 
+.color-B { --note-color: #00bfff; }
+
+#fretboardContainer {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+#fretboard {
+    position: relative;
+    width: 100%;
+    /* Altura ajustada para 6 cordas + espaçamento */
+    height: 320px;
+    background-color: #795548; /* Cor de madeira escura para o braço */
+    border: 3px solid #3e2723; /* Borda externa */
+    border-right: none;
+    border-left: none;
+    overflow-x: auto; /* Permite rolagem horizontal para 24 casas */
+}
+
+/* Container de Cordas (Linhas) */
+.string {
+    display: flex;
+    position: relative;
+    height: 50px; /* Espaço para cada corda */
+    align-items: center; /* Centraliza visualmente as notas */
+}
+
+/* Fio da Corda */
+.string::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px; /* Espessura da corda */
+    background-color: silver;
+    z-index: 1; /* Abaixo do traste e da nota */
+}
+
+.string:last-child {
+    border-bottom: none;
+}
+
+/* Trastes (Linhas Verticais) */
+.fret {
+    position: absolute;
+    height: 100%;
+    min-width: 40px; /* Largura da Casa (Traste) */
+    /* A linha metálica é o border-right */
+    border-right: 3px solid #c6c088; /* Cor do Traste (Metal) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; /* Acima da linha da corda */
+    /* Ajusta a largura para simular a compressão */
+    transition: width 0.3s ease-out; 
+}
+
+/* Cabeçote (Casa 0) */
+.fret:first-child {
+    border-left: 10px solid #212121; /* Simula o Capotraste/Nut */
+    width: 45px;
+    background-color: #212121;
+}
+
+/*para selecionar o filho numero tal, esta selecionado o segundo*/
+.fret:nth-child(2){
+}
+
+/* Célula de Nota */
+.note-cell-fret {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px; /* Tamanho ajustado */
+    height: 24px; /* Tamanho ajustado */
+    line-height: 24px;
+    border-radius: 50%;
+    color: #000000;
+    font-weight: bold;
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+    background-color: transparent; /* Padrão: transparente */
+    border: 1px solid transparent;
+}
+
+/* Notas Abertas (Afinação) - Fundo Preto/Escuro */
+.note-cell-fret.open-note {
+    background-color: #000; /* Preto */
+    color: #ffffff; /* Texto branco */
+    opacity: 1;
+    z-index: 6;
+    /* Remove qualquer zoom ou transformação extra */
+    transform: translate(-50%, -50%) scale(1.0); 
+}
+
+
+/* Destaque das Notas (Da escala) */
+.note-cell-fret.in-scale {
+    background-color: var(--note-color); /* Usa a cor específica da nota */
+    color: #000000 ;
+    border: 2px solid #000000 ;
+    transform: translate(-50%, -50%) scale(1.1); /* Um pequeno zoom */
+    
+}
+/* ⚠️ Prioridade: Se uma nota aberta for Tônica, o estilo Tônica prevalece. */
+.note-cell-fret.open-note.in-scale.tonic {
+    background-color: var(--note-color); 
+    border: 3px solid #ffc107 ;
+    transform: translate(-50%, -50%) scale(1.3); 
+    color: #ffffff  ;
+}
+
+
+/* Ponto (Dot) de Marcação nos Trastes */
+.fret-marker {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    top: 10px; /* Posição dentro do braço */
+    opacity: 0.9;
+    z-index: 3;
+}
+/* Trastes com Dot Marker (3, 5, 7, 9, 15, 17, 19, 21) */
+.fret:nth-child(4) .fret-marker, 
+.fret:nth-child(6) .fret-marker, 
+.fret:nth-child(8) .fret-marker, 
+.fret:nth-child(10) .fret-marker,
+.fret:nth-child(16) .fret-marker,
+.fret:nth-child(18) .fret-marker,
+.fret:nth-child(20) .fret-marker,
+.fret:nth-child(22) .fret-marker {
+    display: block;
+}
+
+/* Traste 12 e 24 (Double Dot) */
+.fret:nth-child(13), .fret:nth-child(25) { /* Casa 12 e 24 */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+}           
+/*
+.fret:nth-child(13)::before, 
+.fret:nth-child(13)::after,
+.fret:nth-child(25)::before, 
+.fret:nth-child(25)::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    z-index: 3;
+    left: 50%;
+    transform: translateX(-50%);
+}
+    */
+.fret:nth-child(13)::before { top: 70px; }
+.fret:nth-child(13)::after { bottom: 70px; }
+.fret:nth-child(25)::before { top: 70px; }
+.fret:nth-child(25)::after { bottom: 70px; }
+
+
+

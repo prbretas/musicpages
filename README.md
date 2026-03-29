@@ -1,2 +1,2 @@
 # musicpages
-Pagina para estudos de música
+to learn Music
