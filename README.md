@@ -1,5 +1,4 @@
 # musicpages
-to learn Music
-
+Aplicação para utilizar Metronomo, visualizar escalas no instrumento.
 
 https://prbretas.github.io/musicpages/
