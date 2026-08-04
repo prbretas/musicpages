@@ -15,6 +15,7 @@
     <script src="./scripts/script-escalas.js" defer></script>
     <script src="./scripts/script-keys.js" defer></script>
     <script src="./scripts/script-tabinter.js" defer></script>
+    <script src="./scripts/script-audio-engine.js" defer></script>
     <script src="./scripts/script-fretboard.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -74,7 +75,13 @@
             <div id="clickIndicator" class="click-indicator"></div>
         </div>
 
-        <h1>🎹 Transpositor de Escalas Musicais</h1>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h1>🎹 Transpositor de Escalas Musicais</h1>
+            <div id="appMenu" style="display:flex;align-items:center;gap:10px;">
+                <label for="themeToggle">Tema</label>
+                <input id="themeToggle" type="checkbox" aria-label="Alternar tema claro/escuro" />
+            </div>
+        </div>
 
         <div class="input-group">
             <label for="tonica">Selecione a Tônica:</label>

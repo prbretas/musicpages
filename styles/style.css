@@ -375,3 +375,23 @@ button:hover {
 .click-indicator.flash {
   background-color: #ff0000; /* INSERIDO: Cor vermelha para o clique */
 }
+
+/* Dark theme variables */
+body.dark {
+  background-color: #121212;
+  color: #e6e6e6;
+}
+body.dark .container {
+  background: #1e1e1e;
+  box-shadow: none;
+  border: 1px solid #2a2a2a;
+}
+body.dark h1, body.dark h2 {
+  color: #e6e6e6;
+}
+body.dark .input-group {
+  background-color: #161616;
+  border-color: #2b2b2b;
+}
+body.dark button { background-color: #2563eb }
+body.dark .note-in-scale { background-color: #264653 !important; color: #e6e6e6 !important }

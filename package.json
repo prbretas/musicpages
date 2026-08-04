@@ -1,0 +1,12 @@
+{
+  "name": "musicpages",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "latest",
+    "jsdom": "latest"
+  }
+}

@@ -163,6 +163,59 @@ function gerarTecladoVirtual(tonicaInput, escalaNotas) {
 
   container.innerHTML = "";
   container.appendChild(innerWrapper);
+  
+  // --- 4. Eventos de áudio para as teclas (pointer + click) ---
+  const keys = innerWrapper.querySelectorAll('.tecla');
+  keys.forEach(key => {
+    // tenta recuperar a nota exibida (texto) e normalizar para nome cromático
+    const notaText = (key.textContent || '').trim().replace('♯', '#');
+    const chromaIndex = typeof getChromaticIndex === 'function' ? getChromaticIndex(notaText) : -1;
+    // Define uma oitava base (C4 = 60). Ajuste se necessário.
+    const baseOctave = 4;
+    const midiNumber = chromaIndex !== -1 ? ((baseOctave + 1) * 12 + chromaIndex) : null;
+
+    if (midiNumber == null) return;
+
+    // pointerdown -> sustain (hold)
+    key.addEventListener('pointerdown', function (ev) {
+      ev.preventDefault();
+      if (window && window.AudioEngine && window.AudioEngine.playNote) {
+        window.AudioEngine.playNote(midiNumber, undefined, { hold: true });
+      }
+      key.classList.add('pressed');
+    });
+
+    const stopKey = function (ev) {
+      ev && ev.preventDefault();
+      if (window && window.AudioEngine && window.AudioEngine.stopNote) {
+        window.AudioEngine.stopNote(midiNumber);
+      }
+      key.classList.remove('pressed');
+    };
+
+    key.addEventListener('pointerup', stopKey);
+    key.addEventListener('pointercancel', stopKey);
+    key.addEventListener('pointerleave', stopKey);
+
+    // click fallback: breve nota
+    key.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      if (window && window.AudioEngine && window.AudioEngine.playNote) {
+        window.AudioEngine.playNote(midiNumber);
+      }
+    });
+  });
+
+  // Global pointerup para garantir stop em qualquer interação
+  document.addEventListener('pointerup', function () {
+    if (typeof window !== 'undefined' && window.AudioEngine && window.AudioEngine.stopNote) {
+      // stop all active notes by iterating a reasonable MIDI range (optimization: track active notes instead)
+      for (let m = 0; m < 128; m++) {
+        window.AudioEngine.stopNote(m);
+      }
+    }
+    document.querySelectorAll('.tecla.pressed').forEach(k => k.classList.remove('pressed'));
+  });
 }
 
 // 4. Lógica de Listener de Redimensionamento:

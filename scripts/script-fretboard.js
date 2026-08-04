@@ -1,7 +1,11 @@
 // script-fretboard.js
 
-// Afinação Padrão (6 Cordas, EADGBE) - A corda 6 é a mais grossa (topo da imagem)
+// Afinação Padrão (6 Cordas, ordem: E (alta), B, G, D, A, E (grave))
+// Observação: o array TUNING corresponde à ordem usada no layout atual.
 const TUNING = ["E", "B", "G", "D", "A", "E"];
+// Mapeamento de Nota MIDI para cada corda aberta (corresponde à ordem de TUNING)
+// E4, B3, G3, D3, A2, E2
+const OPEN_STRING_MIDI = [64, 59, 55, 50, 45, 40];
 const NUMBER_OF_FRETS = 24; // De 0 a 24
 const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 // Incluindo bemóis para que o mapeamento de cor funcione se a escala retornar bemol
@@ -80,6 +84,43 @@ function initializeFretboard(containerId) {
             noteCell.dataset.note = noteName; // Guarda a nota em sustenido
             noteCell.dataset.fret = fretNumber;
             noteCell.dataset.string = stringIndex;
+            // Torna clicável/focável para acessibilidade
+            noteCell.tabIndex = 0;
+
+            // Interações: tocar nota ao pressionar (pointerdown) e soltar (pointerup)
+            (function(midiBase, fretNum, sIndex) {
+                const midiNumber = (OPEN_STRING_MIDI && OPEN_STRING_MIDI[sIndex] != null)
+                    ? OPEN_STRING_MIDI[sIndex] + fretNum
+                    : 60 + fretNum; // fallback
+
+                // pointerdown -> iniciar nota em modo hold (para permitir stop posterior)
+                noteCell.addEventListener('pointerdown', function (ev) {
+                    ev.preventDefault();
+                    if (window && window.AudioEngine && window.AudioEngine.playNote) {
+                        window.AudioEngine.playNote(midiNumber, undefined, { hold: true });
+                    }
+                });
+
+                // pointerup / pointercancel / pointerleave -> parar nota se estiver em hold
+                const stopHandler = function (ev) {
+                    ev.preventDefault();
+                    if (window && window.AudioEngine && window.AudioEngine.stopNote) {
+                        window.AudioEngine.stopNote(midiNumber);
+                    }
+                };
+
+                noteCell.addEventListener('pointerup', stopHandler);
+                noteCell.addEventListener('pointercancel', stopHandler);
+                noteCell.addEventListener('pointerleave', stopHandler);
+
+                // click fallback: dispara uma nota breve (não hold)
+                noteCell.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    if (window && window.AudioEngine && window.AudioEngine.playNote) {
+                        window.AudioEngine.playNote(midiNumber);
+                    }
+                });
+            })(OPEN_STRING_MIDI, fretNumber, stringIndex);
             
             // Adiciona a célula da nota ao traste (o que é mais fácil de posicionar)
             // Posicionamento centralizado pelo CSS, aqui apenas garantimos a posição correta do traste
