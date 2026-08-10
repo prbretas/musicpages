@@ -94,6 +94,42 @@
 /* 📱 Dispositivos Móveis e Telas Pequenas (Max-width: 768px) */
 /* ========================================================================= */
 @media (max-width: 768px) {
+  /* Header Navigation - Mobile */
+  .hamburger-btn {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  body.nav-open .nav-links {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links li a {
+    display: block;
+    padding: 12px 20px;
+    border-radius: 0;
+    font-size: 1rem;
+  }
+
+  .nav-links li a:hover {
+    background-color: #f1f3f5;
+  }
+
+  body.dark .nav-links li a:hover {
+    background-color: #2d2d2d;
+  }
+
   /* Layout Geral */
   .container {
     padding: 15px;
@@ -206,4 +242,18 @@
     justify-content: space-around;
   }
   
+}
+
+/* ========================================================================= */
+/* 🖥️ Desktop (Min-width: 769px) - Header Navigation */
+/* ========================================================================= */
+@media (min-width: 769px) {
+  .hamburger-btn {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: row;
+  }
 }

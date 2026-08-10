@@ -10,12 +10,20 @@
     <link rel="stylesheet" href="./styles/style-responsive.css" />
     <link rel="stylesheet" href="./styles/style-fretboard.css">
      <!--------------- SCRIPTS ------------->
+    <script src="./scripts/script-nav.js" defer></script>
     <script src="./scripts/script.js" defer></script>
     <script src="./scripts/script-metronome.js" defer></script>
     <script src="./scripts/script-escalas.js" defer></script>
     <script src="./scripts/script-keys.js" defer></script>
     <script src="./scripts/script-tabinter.js" defer></script>
+    <script src="./scripts/script-audio-engine.js" defer></script>
+    <script src="./scripts/script-instrument-registry.js" defer></script>
     <script src="./scripts/script-fretboard.js" defer></script>
+    <script src="./scripts/script-instrument-selector.js" defer></script>
+    <script src="./scripts/script-custom-tuning.js" defer></script>
+    <script src="./scripts/script-songsterr.js" defer></script>
+    <script src="./scripts/script-scale-circle.js" defer></script>
+    <script src="./scripts/script-circle-of-fifths.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,6 +32,18 @@
 </head>
 
 <body>
+    <nav id="headerNav" class="header-nav" aria-label="Navegação principal">
+        <button class="hamburger-btn" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
+        <ul id="navLinks" class="nav-links">
+            <li><a href="#metronomeContainer">Metrônomo</a></li>
+            <li><a href="#scaleCalcSection">Calculadora de Escalas</a></li>
+            <li><a href="#tecladoVirtualContainer">Teclado Virtual</a></li>
+            <li><a href="#fretboardContainer">Braço do Instrumento</a></li>
+            <li><a href="#scaleCircleContainer">Círculo de Escalas</a></li>
+            <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
+            <li><a href="#songsterrContainer">Songsterr</a></li>
+        </ul>
+    </nav>
     <div class="container">
         <div id="metronomeContainer" class="metronome-group">
             <h2>Metrônomo Digital</h2>
@@ -74,7 +94,14 @@
             <div id="clickIndicator" class="click-indicator"></div>
         </div>
 
-        <h1>🎹 Transpositor de Escalas Musicais</h1>
+        <div id="scaleCalcSection">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h1>🎹 Transpositor de Escalas Musicais</h1>
+            <div id="appMenu" style="display:flex;align-items:center;gap:10px;">
+                <label for="themeToggle">Tema</label>
+                <input id="themeToggle" type="checkbox" aria-label="Alternar tema claro/escuro" />
+            </div>
+        </div>
 
         <div class="input-group">
             <label for="tonica">Selecione a Tônica:</label>
@@ -147,6 +174,7 @@
             </p>
             <div id="tabelaGeralEscalasResultado">Aguardando geração...</div>
         </div>
+        </div>
 
         <div id="tecladoVirtualContainer"></div>
         <div id="fretboardContainer">
@@ -154,6 +182,17 @@
             <div id="fretboard">
                 </div>
         </div>
+        <div id="scaleCircleContainer">
+            <h2>Círculo de Escalas</h2>
+        </div>
+
+        <div id="circleOfFifthsContainer">
+            <h2>Ciclo de Quintas</h2>
+        </div>
+        <div id="songsterrContainer">
+            <h2>Songsterr</h2>
+        </div>
+    </div>
 </body>
 
 </html>

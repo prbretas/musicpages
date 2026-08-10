@@ -375,3 +375,524 @@ button:hover {
 .click-indicator.flash {
   background-color: #ff0000; /* INSERIDO: Cor vermelha para o clique */
 }
+
+/* ============================= Header Navigation ============================= */
+.header-nav {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.nav-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #495057;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-links li a:hover {
+  background-color: #e9ecef;
+  color: #007bff;
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  color: #495057;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.hamburger-btn:hover {
+  background-color: #e9ecef;
+}
+
+/* ============================= Songsterr Container ============================= */
+#songsterrContainer {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 25px;
+}
+
+.songsterr-iframe-container {
+  min-height: 600px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* ============================= Scale Circle Container ============================= */
+#scaleCircleContainer {
+  margin: 25px auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 500px;
+}
+
+#scaleCircleContainer svg {
+  display: block;
+  margin: 0 auto;
+}
+
+#scaleCircleContainer svg circle {
+  transition: fill 0.2s, stroke 0.2s;
+}
+
+#scaleCircleContainer svg text {
+  user-select: none;
+}
+
+#scaleCircleContainer svg polygon {
+  transition: fill-opacity 0.3s;
+}
+
+.scale-circle-compare-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.scale-circle-compare-btn:hover {
+  background-color: #0056b3;
+}
+
+.scale-circle-compare-btn-active {
+  background-color: #dc3545;
+}
+
+.scale-circle-compare-btn-active:hover {
+  background-color: #c82333;
+}
+
+.scale-circle-compare-controls {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.scale-circle-compare-controls label {
+  font-size: 0.9rem;
+  color: #495057;
+  margin-right: 10px;
+}
+
+.scale-circle-compare-controls select {
+  padding: 6px 10px;
+  border: 1px solid #adb5bd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* ============================= Circle of Fifths ============================= */
+#circleOfFifthsContainer {
+  margin: 25px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.circle-of-fifths-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.cof-major-segment {
+  fill: #e8f4fd;
+  stroke: #b3d9f2;
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill 0.2s;
+}
+
+.cof-major-segment:hover {
+  fill: #d0ebfa;
+}
+
+.cof-minor-segment {
+  fill: #fff3e0;
+  stroke: #ffcc80;
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill 0.2s;
+}
+
+.cof-minor-segment:hover {
+  fill: #ffe0b2;
+}
+
+.cof-segment-active.cof-major-segment {
+  fill: #4a9eff;
+  stroke: #2563eb;
+}
+
+.cof-segment-active.cof-minor-segment {
+  fill: #ff9800;
+  stroke: #e65100;
+}
+
+.cof-enharmonic {
+  fill: #f3e5f5;
+  stroke: #ce93d8;
+}
+
+.cof-label {
+  font-size: 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cof-major-label {
+  fill: #1a1a1a;
+  font-weight: bold;
+}
+
+.cof-minor-label {
+  fill: #555555;
+  font-weight: normal;
+  font-size: 10px;
+}
+
+.cof-center-circle {
+  fill: #f8f9fa;
+  stroke: #dee2e6;
+  stroke-width: 1.5;
+}
+
+.cof-key-info {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #343a40;
+}
+
+.cof-enharmonic-legend {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #f3e5f5;
+  border: 1px solid #ce93d8;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #4a148c;
+}
+
+/* ============================= Dark Theme ============================= */
+body.dark {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+body.dark .container {
+  background: #1e1e1e;
+  box-shadow: none;
+  border: 1px solid #2a2a2a;
+}
+body.dark h1, body.dark h2 {
+  color: #e0e0e0;
+  border-bottom-color: #3a3a3a;
+}
+
+/* --- Header Navigation --- */
+body.dark .header-nav {
+  background-color: #1e1e1e;
+  border-bottom-color: #3a3a3a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+body.dark .nav-links li a {
+  color: #e0e0e0;
+}
+body.dark .nav-links li a:hover {
+  background-color: #2d2d2d;
+  color: #6bb3ff;
+}
+body.dark .hamburger-btn {
+  color: #e0e0e0;
+}
+body.dark .hamburger-btn:hover {
+  background-color: #2d2d2d;
+}
+
+/* --- Containers --- */
+body.dark .metronome-group {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+body.dark .input-group {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+body.dark .output-section {
+  color: #e0e0e0;
+}
+body.dark .output-box {
+  color: #e0e0e0;
+}
+body.dark #escalaResultado,
+body.dark #campoHarmonicoResultado {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-left-color: #4a9eff;
+}
+
+/* --- Form Elements --- */
+body.dark select,
+body.dark input {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+body.dark button {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+body.dark button:hover {
+  background-color: #1d4ed8;
+}
+
+/* --- Interval Table --- */
+body.dark .interval-table th,
+body.dark .interval-table td {
+  border-color: #4a4a4a;
+}
+body.dark .interval-table th {
+  background-color: #1a3a6b;
+  color: #ffffff;
+}
+body.dark .interval-table .table-title {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+body.dark .note-cell {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+body.dark .semitone-cell {
+  background-color: #252525;
+  color: #b0b0b0;
+}
+body.dark .degree-cell {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+body.dark .degree-cell.note-in-scale {
+  color: #ff6b6b !important;
+}
+body.dark .semitones-number-cell {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+body.dark .semitones-number-cell.note-in-scale {
+  background-color: #264653 !important;
+  color: #ff6b6b !important;
+  border-color: #4a4a4a !important;
+}
+body.dark .note-in-scale {
+  background-color: #264653 !important;
+  color: #e0e0e0 !important;
+  border-color: #4a4a4a !important;
+}
+body.dark .note-in-scale.note-cell:first-child {
+  background-color: #4a6e00 !important;
+  color: #ffffff !important;
+}
+
+/* --- General Scale Table --- */
+body.dark .general-scale-table th,
+body.dark .general-scale-table td {
+  border-color: #4a4a4a;
+}
+body.dark .general-scale-table th {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+}
+body.dark .scale-name-cell {
+  background-color: #1e1e1e;
+  color: #4a9eff;
+}
+body.dark .interval-value-cell {
+  background-color: #252525;
+  color: #e0e0e0;
+}
+
+/* --- Metronome Preset Buttons --- */
+body.dark .preset-btn {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+body.dark .preset-btn:hover {
+  background-color: #3a3a3a;
+}
+body.dark .preset-btn.slow {
+  border-color: #4ade80;
+  color: #e0e0e0;
+}
+body.dark .preset-btn.moderate {
+  border-color: #facc15;
+  color: #e0e0e0;
+}
+body.dark .preset-btn.fast {
+  border-color: #f87171;
+  color: #e0e0e0;
+}
+
+/* --- Metronome Display --- */
+body.dark .metronome-display {
+  color: #4a9eff;
+}
+body.dark #bpmInput {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+/* --- Input Fields --- */
+body.dark .input-field input,
+body.dark .input-field select {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+/* --- Scale Circle Container --- */
+body.dark #scaleCircleContainer {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+body.dark #scaleCircleContainer svg circle {
+  stroke: #888;
+}
+body.dark #scaleCircleContainer svg text {
+  fill: #e0e0e0;
+}
+body.dark .scale-circle-compare-btn {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+body.dark .scale-circle-compare-btn:hover {
+  background-color: #1d4ed8;
+}
+body.dark .scale-circle-compare-btn-active {
+  background-color: #dc3545;
+}
+body.dark .scale-circle-compare-btn-active:hover {
+  background-color: #c82333;
+}
+body.dark .scale-circle-compare-controls {
+  background-color: #2d2d2d;
+  border-color: #4a4a4a;
+}
+body.dark .scale-circle-compare-controls label {
+  color: #e0e0e0;
+}
+body.dark .scale-circle-compare-controls select {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #4a4a4a;
+}
+
+/* --- Songsterr Container --- */
+body.dark #songsterrContainer {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+body.dark .songsterr-iframe-container {
+  border-color: #3a3a3a;
+}
+
+/* --- Circle of Fifths Container --- */
+body.dark #circleOfFifthsContainer {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+body.dark .cof-major-segment {
+  fill: #1a3a5c;
+  stroke: #2d5a8a;
+}
+body.dark .cof-major-segment:hover {
+  fill: #244b72;
+}
+body.dark .cof-minor-segment {
+  fill: #3d2e1a;
+  stroke: #6b4c2a;
+}
+body.dark .cof-minor-segment:hover {
+  fill: #4d3a22;
+}
+body.dark .cof-segment-active.cof-major-segment {
+  fill: #2563eb;
+  stroke: #4a9eff;
+}
+body.dark .cof-segment-active.cof-minor-segment {
+  fill: #c45e00;
+  stroke: #ff9800;
+}
+body.dark .cof-enharmonic {
+  fill: #2d1f3d;
+  stroke: #7b4a9e;
+}
+body.dark .cof-major-label {
+  fill: #e0e0e0;
+}
+body.dark .cof-minor-label {
+  fill: #b0b0b0;
+}
+body.dark .cof-center-circle {
+  fill: #252525;
+  stroke: #4a4a4a;
+}
+body.dark .cof-key-info {
+  background-color: #2d2d2d;
+  border-color: #4a4a4a;
+  color: #e0e0e0;
+}
+body.dark .cof-enharmonic-legend {
+  background-color: #2d1f3d;
+  border-color: #7b4a9e;
+  color: #ce93d8;
+}

@@ -27,13 +27,12 @@
 #fretboard {
     position: relative;
     width: 100%;
-    /* Altura ajustada para 6 cordas + espaçamento */
-    height: 320px;
+    /* Height set dynamically by JS based on string count */
     background-color: #795548; /* Cor de madeira escura para o braço */
     border: 3px solid #3e2723; /* Borda externa */
     border-right: none;
     border-left: none;
-    overflow-x: auto; /* Permite rolagem horizontal para 24 casas */
+    overflow: hidden; /* Fretboard cabe 100% na largura, sem scroll */
 }
 
 /* Container de Cordas (Linhas) */
@@ -44,16 +43,16 @@
     align-items: center; /* Centraliza visualmente as notas */
 }
 
-/* Fio da Corda */
+/* Fio da Corda - Espessura dinâmica via custom property (definida inline pelo JS) */
 .string::before {
     content: "";
     position: absolute;
     top: 50%;
     left: 0;
     right: 0;
-    height: 1px; /* Espessura da corda */
+    height: var(--string-thickness, 1px);
     background-color: silver;
-    z-index: 1; /* Abaixo do traste e da nota */
+    z-index: 1;
 }
 
 .string:last-child {
@@ -64,22 +63,21 @@
 .fret {
     position: absolute;
     height: 100%;
-    min-width: 40px; /* Largura da Casa (Traste) */
+    /* Largura definida dinamicamente via inline style (porcentagem) */
     /* A linha metálica é o border-right */
-    border-right: 3px solid #c6c088; /* Cor do Traste (Metal) */
+    border-right: 2px solid #c6c088; /* Cor do Traste (Metal) */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2; /* Acima da linha da corda */
-    /* Ajusta a largura para simular a compressão */
-    transition: width 0.3s ease-out; 
+    box-sizing: border-box;
 }
 
 /* Cabeçote (Casa 0) */
 .fret:first-child {
-    border-left: 10px solid #212121; /* Simula o Capotraste/Nut */
-    width: 45px;
+    border-left: 8px solid #212121; /* Simula o Capotraste/Nut */
     background-color: #212121;
+    z-index: 10;
 }
 
 /*para selecionar o filho numero tal, esta selecionado o segundo*/
@@ -92,18 +90,20 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 24px; /* Tamanho ajustado */
-    height: 24px; /* Tamanho ajustado */
-    line-height: 24px;
+    width: 22px;
+    height: 22px;
+    min-width: 18px;
+    min-height: 18px;
+    line-height: 22px;
     border-radius: 50%;
     color: #000000;
     font-weight: bold;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 5;
-    background-color: transparent; /* Padrão: transparente */
+    background-color: transparent;
     border: 1px solid transparent;
 }
 
@@ -188,3 +188,228 @@
 
 
 
+
+
+/* ==========================================
+   Instrument Selector Dropdown
+   ========================================== */
+
+.instrument-selector-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.instrument-selector-wrapper label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+#instrumentSelect {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+#instrumentSelect:focus {
+    border-color: #795548;
+    box-shadow: 0 0 0 2px rgba(121, 85, 72, 0.2);
+}
+
+/* ==========================================
+   Custom Tuning Panel
+   ========================================== */
+
+#customTuningPanel {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.tuning-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.tuning-input-label {
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.tuning-input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 2px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.tuning-input:focus {
+    border-color: #795548;
+    box-shadow: 0 0 0 2px rgba(121, 85, 72, 0.2);
+}
+
+.tuning-input-error {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+}
+
+.reset-tuning-btn {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #333;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.reset-tuning-btn:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+.reset-tuning-btn:active {
+    background-color: #d5d5d5;
+}
+
+
+/* ==========================================
+   Dark Mode Rules
+   ========================================== */
+
+/* Fretboard Container */
+body.dark #fretboardContainer {
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    color: #e0e0e0;
+}
+
+body.dark #fretboardContainer h2,
+body.dark #fretboardContainer h3,
+body.dark #fretboardContainer label {
+    color: #e0e0e0;
+}
+
+body.dark #fretboard {
+    background-color: #4e342e;
+    border-color: #2e1a15;
+}
+
+body.dark .fret:first-child {
+    background-color: #111111;
+    border-left-color: #111111;
+}
+
+body.dark .fret {
+    border-right-color: #a89a60;
+}
+
+body.dark .fret-marker {
+    background-color: #555555;
+}
+
+body.dark .note-cell-fret.open-note {
+    background-color: #222222;
+    color: #ffffff;
+}
+
+/* Instrument selector in dark mode */
+body.dark .instrument-selector-wrapper label {
+    color: #e0e0e0;
+}
+
+body.dark #instrumentSelect {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body.dark #instrumentSelect:focus {
+    border-color: #a1887f;
+    box-shadow: 0 0 0 2px rgba(161, 136, 126, 0.3);
+}
+
+/* Custom tuning panel in dark mode */
+body.dark .tuning-input-label {
+    color: #aaa;
+}
+
+body.dark .tuning-input {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body.dark .tuning-input:focus {
+    border-color: #a1887f;
+    box-shadow: 0 0 0 2px rgba(161, 136, 126, 0.3);
+}
+
+body.dark .reset-tuning-btn {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body.dark .reset-tuning-btn:hover {
+    background-color: #444;
+    border-color: #777;
+}
+
+/* Virtual Keyboard Container */
+body.dark #tecladoVirtualContainer {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+/* White keys in dark mode - slightly dark */
+body.dark .tecla.branca {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+/* Black keys in dark mode - darker */
+body.dark .tecla.preta {
+    background-color: #1a1a1a;
+    border-color: #333;
+    color: #ccc;
+}
+
+/* Highlighted white keys (scale notes) in dark mode - distinct bright color */
+body.dark .tecla.destaque-branca {
+    background-color: #b8cc00 !important;
+    color: #000000 !important;
+    border: 1px solid #d5e900 !important;
+}
+
+/* Highlighted black keys (scale notes) in dark mode - distinct visible color */
+body.dark .tecla.destaque-preta {
+    background-color: #8a9900 !important;
+    color: #ffffff !important;
+    border: 1px solid #b8cc00 !important;
+}
