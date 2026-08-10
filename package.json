@@ -6,7 +6,8 @@
     "test": "vitest"
   },
   "devDependencies": {
-    "vitest": "latest",
-    "jsdom": "latest"
+    "fast-check": "^4.9.0",
+    "jsdom": "latest",
+    "vitest": "latest"
   }
 }

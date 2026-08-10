@@ -585,6 +585,9 @@ const tonic = document.getElementById('tonica').value;
 if (typeof highlightFretboardNotes === 'function') {
   highlightFretboardNotes(escalaNotas, tonicaInput); 
 }
+
+// Dispatch scale-changed event for Scale Circle and other listeners
+document.dispatchEvent(new CustomEvent('scale-changed', { detail: { notes: escalaNotas, tonica: tonicaInput, tipoEscala: tipoEscala, tonicaIndex: tonicaIndex } }));
 }
 
 // (As funções gerarCampoHarmonico e gerarTabelaGeralEscalas continuam as mesmas)
