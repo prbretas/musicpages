@@ -197,6 +197,10 @@ var CircleOfFifths = (function () {
     var container = document.getElementById(containerId);
     if (!container) return;
 
+    // Remove existing h2 (we'll rebuild the content)
+    var existingTitle = container.querySelector('h2');
+    container.innerHTML = '';
+
     // Criar título
     var title = document.createElement('h2');
     title.textContent = 'Ciclo de Quintas';
@@ -403,6 +407,18 @@ var CircleOfFifths = (function () {
 // Expor no escopo global do navegador
 if (typeof window !== 'undefined') {
   window.CircleOfFifths = CircleOfFifths;
+}
+
+// Initialize on DOMContentLoaded
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      CircleOfFifths.init('circleOfFifthsContainer');
+    });
+  } else {
+    // DOM already ready (defer scripts run after parsing)
+    CircleOfFifths.init('circleOfFifthsContainer');
+  }
 }
 
 // Export condicional para testabilidade com Node.js / Vitest

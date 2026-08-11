@@ -24,6 +24,7 @@
     <script src="./scripts/script-songsterr.js" defer></script>
     <script src="./scripts/script-scale-circle.js" defer></script>
     <script src="./scripts/script-circle-of-fifths.js" defer></script>
+    <script defer src="scripts/script-chord-diagrams.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,6 +40,7 @@
             <li><a href="#scaleCalcSection">Calculadora de Escalas</a></li>
             <li><a href="#tecladoVirtualContainer">Teclado Virtual</a></li>
             <li><a href="#fretboardContainer">Braço do Instrumento</a></li>
+            <li><a href="#chordVisualizerContainer">Acordes</a></li>
             <li><a href="#scaleCircleContainer">Círculo de Escalas</a></li>
             <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
             <li><a href="#songsterrContainer">Songsterr</a></li>
@@ -140,10 +142,19 @@
                 <optgroup label="- Outras Escalas -">
                     <option value="pentatonica_maior">Pentatônica Maior</option>
                     <option value="pentatonica_menor">Pentatônica Menor</option>
+                    <option value="blues_maior">Blues Maior</option>
+                    <option value="blues_menor">Blues Menor</option>
                     <option value="diminuta_tom_e_semitom">Diminuta (T-S)</option>
                     <option value="diminuta_semitom_e_tom">Diminuta (S-T)</option>
                     <option value="tons_inteiros">Tons Inteiros</option>
                     <option value="cromatica">Cromática</option>
+                </optgroup>
+                <optgroup label="- Escalas Exóticas -">
+                    <option value="egipcia">Egípcia (Suspended)</option>
+                    <option value="hirajoshi">Hirajoshi (Japonesa)</option>
+                    <option value="iwato">Iwato (Japonesa)</option>
+                    <option value="man_gong">Man Gong</option>
+                    <option value="ritusen">Ritusen (Celta)</option>
                 </optgroup>
             </select>
 
@@ -182,6 +193,7 @@
             <div id="fretboard">
                 </div>
         </div>
+        <div id="chordVisualizerContainer"><h2>🎸 Visualizador de Acordes</h2></div>
         <div id="scaleCircleContainer">
             <h2>Círculo de Escalas</h2>
         </div>

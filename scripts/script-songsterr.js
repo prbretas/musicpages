@@ -1,7 +1,8 @@
 /**
  * SongsterrEmbed IIFE
- * Renders an iframe directly loading https://www.songsterr.com/
- * No URL input needed — the user navigates within the Songsterr iframe.
+ * Renders a link button to open Songsterr in a new tab.
+ * Songsterr blocks iframe embedding (X-Frame-Options), so we provide
+ * a styled button that opens the site directly.
  */
 var SongsterrEmbed = (function () {
 	'use strict';
@@ -9,35 +10,40 @@ var SongsterrEmbed = (function () {
 	var SONGSTERR_URL = 'https://www.songsterr.com/';
 
 	/**
-	 * Initializes the Songsterr embed: creates an iframe pointing to songsterr.com.
+	 * Initializes the Songsterr container with a styled link.
 	 * @param {string} containerId - The ID of the container element
 	 */
 	function init(containerId) {
 		var container = document.getElementById(containerId);
 		if (!container) return;
 
-		// Iframe container div
-		var iframeWrapper = document.createElement('div');
-		iframeWrapper.className = 'songsterr-iframe-container';
+		var wrapper = document.createElement('div');
+		wrapper.className = 'songsterr-link-container';
 
-		// Create iframe directly pointing to Songsterr
-		var iframe = document.createElement('iframe');
-		iframe.src = SONGSTERR_URL;
-		iframe.style.width = '100%';
-		iframe.style.minHeight = '600px';
-		iframe.style.border = 'none';
-		iframe.setAttribute('allowfullscreen', '');
-		iframe.setAttribute('title', 'Songsterr - Tablaturas');
-		iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+		var desc = document.createElement('p');
+		desc.className = 'songsterr-description';
+		desc.textContent = 'Acesse o Songsterr para buscar tablaturas e partituras interativas de milhares de músicas.';
+		wrapper.appendChild(desc);
 
-		iframeWrapper.appendChild(iframe);
-		container.appendChild(iframeWrapper);
+		var link = document.createElement('a');
+		link.href = SONGSTERR_URL;
+		link.target = '_blank';
+		link.rel = 'noopener noreferrer';
+		link.className = 'songsterr-open-btn';
+		link.textContent = '🎸 Abrir Songsterr';
+		wrapper.appendChild(link);
+
+		container.appendChild(wrapper);
 	}
 
 	// Auto-init on DOMContentLoaded
-	document.addEventListener('DOMContentLoaded', function () {
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', function () {
+			init('songsterrContainer');
+		});
+	} else {
 		init('songsterrContainer');
-	});
+	}
 
 	return {
 		init: init,

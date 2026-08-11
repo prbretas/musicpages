@@ -22,106 +22,53 @@ DEPOIS DE DESENVOLVIDA E IMPLEMENTADA DEVE SER REMOVIDO DESSE ARQUIVO PARA MANTE
   - Implementado: ScaleCircle IIFE com SVG 400x400, 12 notas posicionadas em círculo, polígono conectando notas da escala, modo comparação com 2 escalas, som ao clicar em nota via AudioEngine.
 
 - [x] ISSUE 06 - Incluir container para o Ciclo de Quintas — RESOLVIDA EM 10/08/2026
-  - Implementado: CircleOfFifths IIFE com SVG 450x450, anéis externo (maiores) e interno (menores), clique mostra armadura de clave, marcação de enarmônicos, AudioEngine no clique.
+  - Implementado: CircleOfFifths IIFE com SVG 450x450, anéis externo (maiores) e interno (menores), clique mostra armadura de clave, marcação de enarmônicos, AudioEngine no clique. Corrigida inicialização em 10/08/2026.
 
 - [x] ISSUE 07 - Incluir container iframe do Songsterr — RESOLVIDA EM 10/08/2026
-  - Implementado: Iframe direto para https://www.songsterr.com/ sem input de URL. O usuário navega dentro do próprio Songsterr.
+  - Implementado: Link button para abrir Songsterr em nova aba (iframe bloqueado pelo X-Frame-Options do site).
 
+- [x] ISSUE 08 — Visualizador de Acordes — RESOLVIDA EM 10/08/2026
+  - Implementado: ChordVisualizer IIFE com SVGRenderer de diagramas, LocalChordDB com 84 acordes (12 raízes × 7 qualidades), navegação entre voicings (prev/next com indicador), escuta evento scale-changed, grid responsivo com chord cards, dark mode.
+
+- [x] ISSUE 09 — Avaliar Guitar Pro API (parse.bot) — DESCARTADA EM 10/08/2026
+  - Decisão: Não implementar. API não-oficial, instável, paga. Alternativa local (alphaTab) possível no futuro.
+
+- [x] ISSUE 10 — Avaliar Ultimate Guitar API — DESCARTADA EM 10/08/2026
+  - Decisão: Não implementar. Projeto Python abandonado desde 2017, viola ToS.
+
+- [x] ISSUE 11 — Avaliar Uberchord API — ABSORVIDA PELA ISSUE 08 EM 10/08/2026
+  - Análise: API gratuita e sem auth, REST simples. Incorporada como fonte de dados futura no chord-visualizer spec (com fallback para LocalChordDB).
 
 - [x] ISSUE 12 - Botão fechar/cancelar comparação de escalas — RESOLVIDA EM 10/08/2026
   - Implementado: Botão toggle "Comparar Escalas" / "✕ Fechar Comparação" com cor vermelha quando ativo. Ao fechar, esconde os selects e remove polígono de comparação.
 
+- [x] ISSUE 13 - Corrigir escalas pentatônicas (apareciam 7 notas em vez de 5) — RESOLVIDA EM 10/08/2026
+  - Causa: pentatônicas estavam no modeToRelativeMajorDegree, forçando cálculo diatônico (7 notas). Fix: removidas do mapa, agora calculadas por semitons (5 notas corretas).
+
+- [x] ISSUE 14 - Incluir escalas exóticas das imagens da pasta /img — RESOLVIDA EM 10/08/2026
+  - Implementado: Egípcia [2,3,2,3,2], Hirajoshi [2,1,4,1,4], Iwato [1,4,1,4,2], Man Gong [3,2,3,2,2], Ritusen [2,2,3,2,3], Blues Maior [2,1,1,3,2,3], Blues Menor [3,2,1,1,3,2]. Novo optgroup "Escalas Exóticas" no dropdown.
+
 
 ## IDEIAS A SEREM DESENVOLVIDAS
 
-### ISSUE 08 — Visualizador de Acordes (inspirado em chords.alday.dev)
+### ISSUE 15 — Corrigir o Ciclo de Quintas (não aparecia na tela)
 
-**Descrição**: Incluir um container para visualizar os acordes da escala selecionada, mostrando diagramas de braço do instrumento com as posições dos dedos. Deve suportar:
-1. Exibir automaticamente os acordes do campo harmônico da escala atual
-2. Alternar entre diferentes posições/voicings do mesmo acorde no braço
-3. Adaptar os diagramas ao instrumento selecionado (guitarra 6 cordas vs ukulele vs baixo — a afinação afeta as shapes)
-4. Diagramas SVG com frets, cordas, posições dos dedos (bolinhas numeradas), pestana (barra), cordas abertas (O) e cordas mudas (X)
-
-**Referência visual**: https://chords.alday.dev/
-
-**Implementação sugerida**:
-- Criar `scripts/script-chord-diagrams.js` (IIFE)
-- Definir banco de dados interno com shapes dos acordes mais comuns por instrumento/afinação
-- Renderizar diagramas SVG (similar ao [svguitar](https://github.com/omnibrain/svguitar))
-- Escutar evento `'scale-changed'` para atualizar acordes exibidos
-- Botões "< >" para navegar entre voicings do mesmo acorde
-- Integrar com AudioEngine para tocar o acorde ao clicar
-
-**Complexidade**: Alta — requer banco de dados de shapes de acordes e engine de cálculo de voicings
+**Status**: ✅ Corrigido em 10/08/2026 — faltava a chamada `CircleOfFifths.init('circleOfFifthsContainer')` no DOMContentLoaded.
 
 ---
 
-### ISSUE 09 — Avaliar Guitar Pro API (parse.bot)
+### ISSUE 16 — Integração Uberchord API (complemento ao Visualizador de Acordes)
 
-**Descrição**: Avaliar a API do Guitar Pro disponível em https://parse.bot/marketplace/40f91705-6f12-422e-8dc5-6f3991e33a94/guitarpro-com-api
+**Descrição**: Adicionar o UberchordClient como fonte de dados online complementar ao LocalChordDB no Visualizador de Acordes (Issue 08). Já especificado no `chord-visualizer` spec (task 6.1).
 
-**Refinamento / Análise**:
-- **O que é**: Marketplace de API que faz scraping/parse do site guitarpro.com. Não é uma API oficial do Guitar Pro.
-- **Funcionalidade provável**: Buscar tabs/partituras do Guitar Pro, acessar metadados de músicas
-- **Riscos**:
-  - API não-oficial — pode quebrar sem aviso se o site mudar
-  - Possível violação de ToS do Guitar Pro
-  - Dependência de serviço terceiro (parse.bot) — disponibilidade incerta
-  - Custo: provavelmente pago (marketplace)
-- **Viabilidade para o projeto**: Baixa a média. Seria útil para importar tabs, mas a instabilidade e o custo não justificam para um projeto pessoal/educacional.
-- **Alternativa**: Considerar formato .gp (Guitar Pro files) — existem parsers open-source como [alphaTab](https://github.com/CoderLine/alphaTab) que lêem arquivos .gp5/.gpx localmente, sem API.
+**Próximo passo**: Testar CORS com `fetch('https://api.uberchord.com/v1/chords/Am')` no browser. Se funcionar, implementar task 6.1 do spec.
 
-**Recomendação**: ⚠️ Não implementar por enquanto. Avaliar alphaTab como alternativa local se quiser suporte a arquivos Guitar Pro.
+**Complexidade**: Média
 
 ---
 
-### ISSUE 10 — Avaliar Ultimate Guitar API (joncardasis/ultimate-api)
+### ISSUE 17 — Reprodução sonora dos acordes (strum pattern)
 
-**Descrição**: Avaliar a API do Ultimate Guitar disponível em https://github.com/joncardasis/ultimate-api
+**Descrição**: Ao clicar em um diagrama de acorde, tocar as notas do acorde em sequência (strum) via AudioEngine. Já especificado no `chord-visualizer` spec (task 8.1).
 
-**Refinamento / Análise**:
-- **O que é**: Biblioteca Python (não JavaScript) que faz web scraping do site ultimate-guitar.com
-- **Última atualização**: 2017 — projeto abandonado há 9 anos
-- **Funcionalidade**: Buscar cifras, tabs e letras por artista/música
-- **Riscos**:
-  - Projeto Python — incompatível com o stack JavaScript do MusicPages (precisaria de um backend)
-  - Abandonado desde 2017 — certamente quebrado pois o Ultimate Guitar mudou várias vezes
-  - Web scraping viola ToS do Ultimate Guitar
-  - Ultimate Guitar tem proteção anti-bot (Cloudflare, etc.)
-- **Viabilidade para o projeto**: Muito baixa. Não funciona, não é JavaScript, viola ToS.
-
-**Recomendação**: ❌ Não implementar. Se quiser cifras/tabs, usar o iframe do Songsterr (já implementado) ou avaliar a Uberchord API (Issue 11) para dados de acordes.
-
----
-
-### ISSUE 11 — Avaliar Uberchord API
-
-**Descrição**: Avaliar a API da Uberchord disponível em https://api.uberchord.com/
-
-**Refinamento / Análise**:
-- **O que é**: API REST gratuita que retorna dados de acordes de guitarra (finger positions, strings, frets)
-- **Endpoints principais**:
-  - `GET /v1/chords/{chordName}` — retorna diagrama do acorde (ex: `/v1/chords/Am`)
-  - `GET /v1/chords?nameLike={partial}` — busca por nome parcial
-- **Formato de resposta**: JSON com campos como `strings` (posição por corda), `fingering`, `chordName`
-- **Vantagens**:
-  - Gratuita e sem autenticação (API key não necessária)
-  - REST simples, consumível direto do browser via fetch
-  - Dados estruturados prontos para renderizar diagramas SVG
-  - Boa cobertura de acordes comuns
-- **Riscos**:
-  - API pode ser descontinuada (a empresa foca no app mobile)
-  - Dados apenas para guitarra standard tuning — não cobre ukulele ou baixo nativamente
-  - Sem garantia de SLA ou uptime
-  - CORS: precisa verificar se permite chamadas do browser
-- **Viabilidade para o projeto**: Média-alta para guitarra. Pode ser combinada com o Issue 08 (visualizador de acordes) como fonte de dados.
-
-**Recomendação**: ✅ Vale implementar como fonte de dados complementar para a Issue 08. Fazer fallback para banco local caso a API esteja fora do ar. Testar CORS antes de investir tempo.
-
-**Próximo passo**: Fazer teste de CORS com `fetch('https://api.uberchord.com/v1/chords/Am')` no browser para verificar se funciona direto.
-
-13 - corrigir a escala pentatonicas. pois esta errado esta aparecendo 7 notas, deveriam ser apenas 5.
-
-14 - Gostaria de incluir as escalas que estao nas imagens da pasta /img,
-
-15 - corrigir o ciclo de quintas, pois nao esta aparecendo na tela corretamente.
+**Complexidade**: Média
