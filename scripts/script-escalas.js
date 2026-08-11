@@ -58,7 +58,6 @@ const modeToRelativeMajorDegree = {
     'jonico': 0, 'maior': 0, 'eolio': 3, 'menor_natural': 3, 
     'dorico': 10, 'frigio': 8, 'lidio': 7, 'mixolidio': 5, 'locrio': 1, 
     'menor_harmonica': 3, 'menor_melodica': 3,
-    'pentatonica_maior': 0, 'pentatonica_menor': 3,
 };
 
 // Nomenclatura dos Graus
@@ -95,6 +94,13 @@ const estruturasEscalas = {
   locrio: [1, 2, 2, 1, 2, 2, 2],
   pentatonica_maior: [2, 2, 3, 2, 3],
   pentatonica_menor: [3, 2, 2, 3, 2], 
+  blues_maior: [2, 1, 1, 3, 2, 3],
+  blues_menor: [3, 2, 1, 1, 3, 2],
+  egipcia: [2, 3, 2, 3, 2],
+  hirajoshi: [2, 1, 4, 1, 4],
+  iwato: [1, 4, 1, 4, 2],
+  man_gong: [3, 2, 3, 2, 2],
+  ritusen: [2, 2, 3, 2, 3],
   diminuta_tom_e_semitom: [2, 1, 2, 1, 2, 1, 2, 1],
   diminuta_semitom_e_tom: [1, 2, 1, 2, 1, 2, 1, 2],
   cromatica: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -354,6 +360,13 @@ function gerarCampoHarmonico(escalaNotas, tonicaIndex, tipoEscala) {
     case "locrio": estruturaCH = campoHarmonicoLocrio; escalaEstrutura = estruturasEscalas["locrio"]; cScaleName = "Lócrio"; break;
     case "pentatonica_maior": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["pentatonica_maior"]; cScaleName = "Pentatônica Maior"; break;
     case "pentatonica_menor": estruturaCH = campoHarmonicoPentaMenor; escalaEstrutura = estruturasEscalas["pentatonica_menor"]; cScaleName = "Pentatônica Menor"; break;
+    case "blues_maior": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["blues_maior"]; cScaleName = "Blues Maior"; break;
+    case "blues_menor": estruturaCH = campoHarmonicoPentaMenor; escalaEstrutura = estruturasEscalas["blues_menor"]; cScaleName = "Blues Menor"; break;
+    case "egipcia": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["egipcia"]; cScaleName = "Egípcia"; break;
+    case "hirajoshi": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["hirajoshi"]; cScaleName = "Hirajoshi (Japonesa)"; break;
+    case "iwato": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["iwato"]; cScaleName = "Iwato (Japonesa)"; break;
+    case "man_gong": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["man_gong"]; cScaleName = "Man Gong"; break;
+    case "ritusen": estruturaCH = campoHarmonicoPentaMaior; escalaEstrutura = estruturasEscalas["ritusen"]; cScaleName = "Ritusen (Celta)"; break;
     case 'diminuta_tom_e_semitom': estruturaCH = campoHarmonicoDiminutaTomSemitom; escalaEstrutura = estruturasEscalas['diminuta_tom_e_semitom']; cScaleName = "Diminuta Tom/Semitom"; break;
     case 'diminuta_semitom_e_tom': estruturaCH = campoHarmonicoDiminutaSemitomTom; escalaEstrutura = estruturasEscalas['diminuta_semitom_e_tom']; cScaleName = "Diminuta Semitom/Tom"; break;
     case 'tons_inteiros': estruturaCH = campoHarmonicoTonsInteiros; escalaEstrutura = estruturasEscalas['tons_inteiros']; cScaleName = "Tons Inteiros"; break;
@@ -369,7 +382,7 @@ function gerarCampoHarmonico(escalaNotas, tonicaIndex, tipoEscala) {
     const grau = estruturaCH[i];
     let acordeTonica;
 
-    if (isDiatonicMode || tipoEscala.includes('pentatonica')) {
+    if (isDiatonicMode || tipoEscala.includes('pentatonica') || ['egipcia', 'hirajoshi', 'iwato', 'man_gong', 'ritusen', 'blues_maior', 'blues_menor'].includes(tipoEscala)) {
         acordeTonica = escalaNotas[i] || 'Nota-Invalida'; 
     } else {
         acordeTonica = notasCromaticas[currentIndex]; 
@@ -439,6 +452,13 @@ function calcularEscala() {
     case "locrio": cScaleName = "Lócrio"; break;
     case "pentatonica_maior": cScaleName = "Pentatônica Maior"; break;
     case "pentatonica_menor": cScaleName = "Pentatônica Menor"; break;
+    case "blues_maior": cScaleName = "Blues Maior"; break;
+    case "blues_menor": cScaleName = "Blues Menor"; break;
+    case "egipcia": cScaleName = "Egípcia"; break;
+    case "hirajoshi": cScaleName = "Hirajoshi (Japonesa)"; break;
+    case "iwato": cScaleName = "Iwato (Japonesa)"; break;
+    case "man_gong": cScaleName = "Man Gong"; break;
+    case "ritusen": cScaleName = "Ritusen (Celta)"; break;
     case "diminuta_tom_e_semitom": cScaleName = "Diminuta (T-S)"; break;
     case "diminuta_semitom_e_tom": cScaleName = "Diminuta (S-T)"; break;
     case "tons_inteiros": cScaleName = "Tons Inteiros"; break;

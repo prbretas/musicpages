@@ -438,11 +438,31 @@ button:hover {
   margin-top: 25px;
 }
 
-.songsterr-iframe-container {
-  min-height: 600px;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  overflow: hidden;
+.songsterr-link-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.songsterr-description {
+  color: #555;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.songsterr-open-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background-color: #ff6b35;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.songsterr-open-btn:hover {
+  background-color: #e55a2b;
 }
 
 /* ============================= Scale Circle Container ============================= */
@@ -617,6 +637,103 @@ button:hover {
   border-radius: 6px;
   font-size: 0.85rem;
   color: #4a148c;
+}
+
+/* ============================= Chord Visualizer ============================= */
+#chordVisualizerContainer {
+  margin: 25px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.chord-diagrams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.chord-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.chord-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+
+.chord-card-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.chord-degree {
+  font-size: 11px;
+  color: #6c757d;
+  font-weight: normal;
+}
+
+.chord-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #343a40;
+}
+
+.chord-svg-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.chord-unavailable {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.chord-voicing-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chord-nav-btn {
+  background: none;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  color: #495057;
+}
+
+.chord-nav-btn:hover {
+  background-color: #e9ecef;
+}
+
+.chord-voicing-indicator {
+  font-size: 11px;
+  color: #6c757d;
+}
+
+.chord-visualizer-unavailable {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
 }
 
 /* ============================= Dark Theme ============================= */
@@ -840,8 +957,14 @@ body.dark #songsterrContainer {
   border-color: #3a3a3a;
   color: #e0e0e0;
 }
-body.dark .songsterr-iframe-container {
-  border-color: #3a3a3a;
+body.dark .songsterr-description {
+  color: #b0b0b0;
+}
+body.dark .songsterr-open-btn {
+  background-color: #e55a2b;
+}
+body.dark .songsterr-open-btn:hover {
+  background-color: #ff6b35;
 }
 
 /* --- Circle of Fifths Container --- */
@@ -895,4 +1018,34 @@ body.dark .cof-enharmonic-legend {
   background-color: #2d1f3d;
   border-color: #7b4a9e;
   color: #ce93d8;
+}
+
+/* --- Chord Visualizer Container (Dark) --- */
+body.dark #chordVisualizerContainer {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+}
+body.dark .chord-card {
+  background-color: #2a2a2a;
+  border-color: #3a3a3a;
+}
+body.dark .chord-card:hover {
+  box-shadow: 0 2px 8px rgba(255,255,255,0.05);
+}
+body.dark .chord-name {
+  color: #e0e0e0;
+}
+body.dark .chord-degree {
+  color: #999;
+}
+body.dark .chord-nav-btn {
+  border-color: #555;
+  color: #ccc;
+}
+body.dark .chord-nav-btn:hover {
+  background-color: #3a3a3a;
+}
+body.dark .chord-voicing-indicator {
+  color: #999;
 }
