@@ -13,8 +13,9 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 | E — Correção do Dicionário de Acordes | Dados/correção | **P1** | **alta** | M | médio | Não (auditoria + fix) |
 | C — Responsividade mobile do Fretboard | UI/responsivo | P2 | média | M | médio | Parcial (ajuste de spec feita) |
 | F — Menu dropdown por tema | UI/navegação | P2 | baixa | M | médio | Recomendável |
-| H — Menu lateral retrátil (sidebar) | UI/navegação | P2 | média | M/L | **alto** | **Sim** |
-| I — Seletores Tônica/Escala no topo | UI/navegação | P2 | média | M | médio | **Sim** (com H) |
+| H — Menu lateral retrátil (sidebar) | UI/navegação | P2 | média | M/L | **alto** | ✅ FEITA (set/2026) |
+| I — Seletores Tônica/Escala no topo | UI/navegação | P2 | média | M | médio | ✅ FEITA (set/2026, com H) |
+| J — Toggle modo completo do Metrônomo | Feature | P3 | baixa | M/L | médio | Recomendável (refinar c/ repo) |
 | A — Afinador (Web Audio API) | Feature nova | P2 | baixa | **L** | baixo | **Sim** |
 | D — Gerador de backing tracks | Feature nova | P3 | baixa | **L** | baixo | **Sim** (dev exigiu) |
 | B — Treino de ouvido (Tone.js) | Feature nova | P3 | baixa | **L** | baixo | **Sim** (dev exigiu) |
@@ -52,13 +53,15 @@ criar a spec em `.kiro/specs/` antes de implementar.
 - **Responsividade mobile do Fretboard** — melhorar layout/toque em telas pequenas. (Ideia C)
 - **Gerador de backing tracks** — pistas de acompanhamento a partir do campo harmônico. (Ideia D)
 - **Correção do Dicionário de Acordes** — corrigir voicings do LocalChordDB; avaliar Tonal.js/Uberchord. (Ideia E)
-- **Menu superior com dropdown por tema** — agrupar navegação em dropdowns no hover. (Ideia F)
-- **Estruturas de Escalas em popup** — concluir spec floating-popups (tasks 6.2 e 10.2). (Ideia G)
-- **Menu lateral retrátil (sidebar)** — navegação off-canvas que se esconde. (Ideia H)
-- **Seletores de Tônica/Escala no topo** — acesso rápido no header. (Ideia I)
+- **Menu superior com dropdown por tema** — agrupar navegação em dropdowns no hover. (Ideia F — nota: superada pela H, sidebar, já implementada)
+- **Toggle modo completo do Metrônomo** — alternar entre metrônomo simples e versão completa (repo prbretas/metronome). (Ideia J)
 
 ### Concluído
 - ~~**README do projeto** — Criar um README completo e profissional para o repositório.~~
+- ~~**Estruturas de Escalas em popup** (Ideia G) — concluída via spec floating-popups.~~
+- ~~**Correção do Dicionário de Acordes** (Ideia E) — 4 voicings diminutos corrigidos.~~
+- ~~**Menu lateral retrátil / sidebar** (Ideia H) — implementada via spec sidebar-navigation.~~
+- ~~**Seletores de Tônica/Escala no topo** (Ideia I) — implementada junto com a sidebar.~~
 
 ### Coberta por outras features
 - **Sincronização geral** — Já tratada dentro das specs de Floating Popups (req 5), Chord Fretboard Visualization (req 4), e Scale Shapes CAGED (req 5).
@@ -203,3 +206,23 @@ Mover os seletores de **tônica** e **tipo de escala** (hoje dentro de `#scaleCa
   interno neutralizado; sem scroll horizontal; scrollbar estilizado para light/dark.
 - Toggle de tema movido para o header como **switch sol/lua** (`role="switch"`, aria-checked,
   persistência em localStorage preservada). Removido o antigo checkbox "Tema" do corpo da página.
+
+### Ideias H + I — IMPLEMENTADAS (set/2026) via spec `sidebar-navigation`
+- Menu horizontal substituído por **sidebar off-canvas retrátil** (abre por botão, fecha por
+  overlay/Esc/clique em item), com focus trap reusado do FloatingPopup e retorno de foco.
+- **Topbar** fixa com botão de menu + **seletores de tônica/escala** (opções clonadas dos originais,
+  sincronização bidirecional sem laço, dispara `calcularEscala`/`scale-changed`) + toggle de tema.
+- Selects originais mantidos em `#scaleCalcSection` e sincronizados (menor risco; ocultar é iteração
+  futura, se desejado). 17 testes novos; suíte total 180 passando.
+
+### IDEIA J — Toggle de "modo" do Metrônomo (versão completa do projeto prbretas/metronome)
+O metrônomo atual é rápido e prático; a ideia é adicionar um **toggle que alterna a forma do
+metrônomo** entre o modo simples atual e um **modo completo** inspirado no projeto
+https://github.com/prbretas/metronome (recursos a mapear do repo: ex. compasso/time signature,
+subdivisões, acentos por batida, controle visual mais rico, etc. — confirmar olhando o repo).
+- Manter o modo simples como padrão (o dev gosta de como está); o modo completo é opcional via toggle.
+- A analisar: reaproveitar o engine de áudio existente vs. portar a lógica do outro projeto; onde o
+  toggle vive (dentro do popup do metrônomo); persistência da preferência de modo.
+- Complexidade: Média/Alta (depende de quanto do outro projeto será portado)
+- Diretriz: **refinar com base no repo** antes de implementar (mapear features do prbretas/metronome).
+- Dependências: popup do metrônomo (feito), AudioEngine (existe).

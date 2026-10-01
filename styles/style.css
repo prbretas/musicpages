@@ -377,10 +377,10 @@ button:hover {
 }
 
 /* ============================= Header Navigation ============================= */
-.header-nav {
+.topbar {
   background-color: #ffffff;
   border-bottom: 1px solid #dee2e6;
-  padding: 10px 20px;
+  padding: 8px 16px;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -390,16 +390,63 @@ button:hover {
   gap: 12px;
 }
 
-.nav-links {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* Menu (hamburger) button that opens the sidebar */
+.sidebar-toggle {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 8px 12px;
+  min-width: 44px;
+  min-height: 44px;
+  color: #495057;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.sidebar-toggle:hover {
+  background-color: #e9ecef;
+}
+
+.sidebar-toggle:focus-visible {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+}
+
+/* Tonic / scale selectors in the topbar */
+.topbar-selectors {
+  flex: 1 1 auto;
   display: flex;
-  gap: 5px;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   flex-wrap: wrap;
-  flex: 1 1 auto;
+}
+
+.topbar-selectors select {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #212529;
+  font-size: 0.9rem;
+  max-width: 100%;
+}
+
+/* Visually hidden but accessible labels */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ============================= Theme Toggle Switch ============================= */
@@ -472,39 +519,103 @@ button:hover {
   background-color: #e8eef7;
 }
 
-.hamburger-btn {
-  display: none;
+/* ============================= Off-canvas Sidebar ============================= */
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: min(280px, 80vw);
+  background-color: #ffffff;
+  border-right: 1px solid #dee2e6;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.12);
+  z-index: 1100;
+  transform: translateX(-100%);
+  transition: transform 250ms ease;
+  overflow-y: auto;
+  padding: 16px 12px;
+  box-sizing: border-box;
+}
+
+body.sidebar-open .app-sidebar {
+  transform: translateX(0);
+}
+
+.sidebar-close {
+  display: block;
+  margin-left: auto;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #495057;
   cursor: pointer;
-  padding: 8px 12px;
-  color: #495057;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.hamburger-btn:hover {
-  background-color: #e9ecef;
-}
-
-.nav-links li a {
-  text-decoration: none;
-  color: #495057;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 500;
   transition: background-color 0.2s, color 0.2s;
 }
 
-.nav-links li a:hover {
+.sidebar-close:hover {
   background-color: #e9ecef;
   color: #007bff;
 }
 
-.hamburger-btn:hover {
+.sidebar-close:focus-visible {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+}
+
+.sidebar-links {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-links li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #495057;
+  padding: 12px 14px;
+  min-height: 44px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar-links li a:hover {
   background-color: #e9ecef;
+  color: #007bff;
+}
+
+.sidebar-links li a:focus-visible {
+  outline: 2px solid #4a9eff;
+  outline-offset: -2px;
+}
+
+/* Overlay / scrim behind the sidebar */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 1050;
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+body.sidebar-open .sidebar-overlay {
+  opacity: 1;
+}
+
+/* Lock background scroll while sidebar OR a popup is open */
+body.sidebar-open,
+body.popup-open {
+  overflow: hidden;
 }
 
 /* ============================= Songsterr Container ============================= */
@@ -830,23 +941,45 @@ body.dark h1, body.dark h2 {
 }
 
 /* --- Header Navigation --- */
-body.dark .header-nav {
+body.dark .topbar {
   background-color: #1e1e1e;
   border-bottom-color: #3a3a3a;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
-body.dark .nav-links li a {
+body.dark .sidebar-toggle {
   color: #e0e0e0;
 }
-body.dark .nav-links li a:hover {
+body.dark .sidebar-toggle:hover {
+  background-color: #2d2d2d;
+}
+body.dark .topbar-selectors select {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border-color: #3a3a3a;
+}
+
+/* Sidebar dark mode */
+body.dark .app-sidebar {
+  background-color: #1e1e1e;
+  border-right-color: #3a3a3a;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.5);
+}
+body.dark .sidebar-links li a {
+  color: #e0e0e0;
+}
+body.dark .sidebar-links li a:hover {
   background-color: #2d2d2d;
   color: #6bb3ff;
 }
-body.dark .hamburger-btn {
+body.dark .sidebar-close {
   color: #e0e0e0;
 }
-body.dark .hamburger-btn:hover {
+body.dark .sidebar-close:hover {
   background-color: #2d2d2d;
+  color: #6bb3ff;
+}
+body.dark .sidebar-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* --- Containers --- */
@@ -1317,11 +1450,10 @@ body.popup-open {
 }
 
 /* Active menu item indicator */
-.nav-links a.active {
+.sidebar-links a.active {
   background-color: #e3f2fd;
   color: #007bff;
   font-weight: 600;
-  border-bottom: 2px solid #007bff;
 }
 
 /* ============================= Floating Popup - Dark Mode ============================= */
@@ -1376,10 +1508,9 @@ body.dark .highlight-row td {
   color: #ffe082 !important;
 }
 
-body.dark .nav-links a.active {
+body.dark .sidebar-links a.active {
   background-color: #1a3a5c;
   color: #6bb3ff;
-  border-bottom-color: #4a9eff;
 }
 
 /* ============================= Floating Popup - Bottom Sheet (Mobile) ============================= */
