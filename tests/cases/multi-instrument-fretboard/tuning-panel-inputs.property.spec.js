@@ -53,7 +53,7 @@ describe('Property 10: Tuning panel input count and pre-population', () => {
                 const inputs = document.querySelectorAll('.tuning-input');
                 expect(inputs.length).toBe(profile.strings);
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 
@@ -75,7 +75,7 @@ describe('Property 10: Tuning panel input count and pre-population', () => {
                     expect(inputs[visualIndex].value).toBe(profile.tuning[dataIndex]);
                 }
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });

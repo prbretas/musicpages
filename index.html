@@ -19,12 +19,15 @@
     <script src="./scripts/script-audio-engine.js" defer></script>
     <script src="./scripts/script-instrument-registry.js" defer></script>
     <script src="./scripts/script-fretboard.js" defer></script>
+    <script src="./scripts/script-scale-shapes.js" defer></script>
     <script src="./scripts/script-instrument-selector.js" defer></script>
     <script src="./scripts/script-custom-tuning.js" defer></script>
     <script src="./scripts/script-songsterr.js" defer></script>
     <script src="./scripts/script-scale-circle.js" defer></script>
     <script src="./scripts/script-circle-of-fifths.js" defer></script>
     <script defer src="scripts/script-chord-diagrams.js"></script>
+
+    <script src="./scripts/script-floating-popup.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,8 +39,9 @@
     <nav id="headerNav" class="header-nav" aria-label="Navegação principal">
         <button class="hamburger-btn" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
         <ul id="navLinks" class="nav-links">
-            <li><a href="#metronomeContainer">Metrônomo</a></li>
+            <li><a href="#metronomeContainer" data-popup="metronome">Metrônomo</a></li>
             <li><a href="#scaleCalcSection">Calculadora de Escalas</a></li>
+            <li><a href="#" data-popup="scale-structure">Estruturas de Escalas</a></li>
             <li><a href="#tecladoVirtualContainer">Teclado Virtual</a></li>
             <li><a href="#fretboardContainer">Braço do Instrumento</a></li>
             <li><a href="#chordVisualizerContainer">Acordes</a></li>

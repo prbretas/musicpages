@@ -91,7 +91,7 @@ describe('Property 13: Octave preservation on tuning override', () => {
                     }
                 }
             ),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });

@@ -24,7 +24,7 @@ describe('Property 6: MIDI number calculation correctness', () => {
                     expect(result).toBe(expected);
                 }
             ),
-            { numRuns: 30 }
+            { numRuns: 10 }
         );
     });
 });

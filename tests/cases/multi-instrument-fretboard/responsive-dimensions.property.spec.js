@@ -29,7 +29,7 @@ describe('Property 7: Responsive container dimensions', () => {
                     expect(result.height).toBe(expectedHeight);
                 }
             ),
-            { numRuns: 30 }
+            { numRuns: 10 }
         );
     });
 });

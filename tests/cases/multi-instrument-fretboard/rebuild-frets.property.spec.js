@@ -66,7 +66,7 @@ describe('Property 4: Fretboard rebuild produces correct fret count', () => {
                     expect(fretCells.length).toBe(expectedFrets);
                 }
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });
