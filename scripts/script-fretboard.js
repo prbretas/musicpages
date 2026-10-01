@@ -134,6 +134,18 @@ function calculateFretboardDimensions(strings, frets) {
     return { width: width, height: height };
 }
 
+/**
+ * Pure geometry for a single fret column, in pixels.
+ * Fixed-width columns (px) are what enable horizontal scrolling and prevent
+ * note-cell overlap on small screens (vs. the old percentage layout).
+ * @param {number} fretNumber - 0-based fret index (0 = nut)
+ * @param {number} fretWidth - width per fret cell in px
+ * @returns {{ leftPx: number, widthPx: number }}
+ */
+function computeFretGeometry(fretNumber, fretWidth) {
+    return { leftPx: fretNumber * fretWidth, widthPx: fretWidth };
+}
+
 // ------------------------------------------------------------------
 // Chord Shape Mapping
 // ------------------------------------------------------------------
@@ -422,21 +434,24 @@ function buildStringRow(openNote, octave, numFrets, dataStringIndex, visualIndex
     var thickness = calculateStringThickness(visualIndex, totalStrings);
     stringElement.style.setProperty('--string-thickness', thickness + 'px');
 
+    // Fixed total width (px) so the row holds all fixed-width fret columns and
+    // the container can scroll horizontally instead of squeezing everything.
+    stringElement.style.width = ((numFrets + 1) * FRET_WIDTH) + 'px';
+
     var chromaticIndex = getChromaticIndex(openNote);
     if (chromaticIndex === -1) chromaticIndex = 0; // fallback
-
-    // Calculate fret width as percentage of total container
-    var fretWidthPercent = 100 / (numFrets + 1);
 
     for (var fretNumber = 0; fretNumber <= numFrets; fretNumber++) {
         var noteIndex = (chromaticIndex + fretNumber) % 12;
         var noteName = NOTE_NAMES[noteIndex];
 
-        // Create fret container — use percentage positioning to fill container width
+        // Create fret container — fixed-width px columns (not %) so note-cells
+        // never overlap and the container can scroll horizontally.
+        var geom = computeFretGeometry(fretNumber, FRET_WIDTH);
         var fret = document.createElement('div');
         fret.classList.add('fret');
-        fret.style.left = (fretNumber * fretWidthPercent) + '%';
-        fret.style.width = fretWidthPercent + '%';
+        fret.style.left = geom.leftPx + 'px';
+        fret.style.width = geom.widthPx + 'px';
 
         // Add fret markers only on the top visual string
         if (isTopString) {
@@ -561,10 +576,14 @@ function applyInstrumentProfile(profileId, tuningOverride) {
     // Tear down existing content
     fretboard.innerHTML = '';
 
-    // Calculate and set container dimensions
+    // Calculate and set container dimensions.
     var dims = calculateFretboardDimensions(numStrings, numFrets);
-    // Use 100% width to fit within parent container (no horizontal scroll)
+    // The #fretboard stays at the viewport width and scrolls horizontally
+    // (overflow-x:auto in CSS). The inner .string rows carry the full fixed
+    // pixel width (= (frets+1)*FRET_WIDTH), which is what overflows and scrolls.
+    // We expose the intended full width via a CSS var for any consumers.
     fretboard.style.width = '100%';
+    fretboard.style.setProperty('--fretboard-content-width', dims.width + 'px');
     fretboard.style.height = dims.height + 'px';
 
     // Render strings in reverse order (highest pitch at top, lowest at bottom)
@@ -852,6 +871,7 @@ if (typeof module !== 'undefined' && module.exports) {
         rebuildString: rebuildString,
         calculateStringThickness: calculateStringThickness,
         calculateFretboardDimensions: calculateFretboardDimensions,
+        computeFretGeometry: computeFretGeometry,
         getChromaticIndex: getChromaticIndex,
         getNoteName: getNoteName,
         calculateMidi: calculateMidi,

@@ -32,15 +32,59 @@
     border: 3px solid #3e2723; /* Borda externa */
     border-right: none;
     border-left: none;
-    overflow: hidden; /* Fretboard cabe 100% na largura, sem scroll */
+    /* Horizontal scroll: fret columns have a fixed px width, so on narrow
+       screens the board scrolls instead of squeezing/overlapping the notes. */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* momentum scroll on iOS */
+    /* Styled scrollbar — light theme */
+    scrollbar-width: thin;
+    scrollbar-color: #a1887f #3e2723;
 }
 
-/* Container de Cordas (Linhas) */
+#fretboard::-webkit-scrollbar {
+    height: 8px;
+}
+#fretboard::-webkit-scrollbar-track {
+    background: #3e2723;
+}
+#fretboard::-webkit-scrollbar-thumb {
+    background-color: #a1887f;
+    border-radius: 4px;
+}
+#fretboard::-webkit-scrollbar-thumb:hover {
+    background-color: #d7b8b0;
+}
+
+/* Dark mode scrollbar for the fretboard */
+body.dark #fretboard {
+    scrollbar-color: #6d4c41 #1a0f0a;
+}
+body.dark #fretboard::-webkit-scrollbar-track {
+    background: #1a0f0a;
+}
+body.dark #fretboard::-webkit-scrollbar-thumb {
+    background-color: #6d4c41;
+}
+body.dark #fretboard::-webkit-scrollbar-thumb:hover {
+    background-color: #8d6e63;
+}
+
+/* Container de Cordas (Linhas) — width set inline (px) by JS to the full
+   board width so the row overflows #fretboard and drives the horizontal scroll. */
 .string {
     display: flex;
     position: relative;
     height: 50px; /* Espaço para cada corda */
     align-items: center; /* Centraliza visualmente as notas */
+    min-width: 100%;
+}
+
+/* Scrollbar height reserve: keeps the last string clear of the horizontal
+   scrollbar. The 10px matches the 8px scrollbar + 2px breathing room. */
+#fretboard {
+    padding-bottom: 10px;
+    box-sizing: border-box;
 }
 
 /* Fio da Corda - Espessura dinâmica via custom property (definida inline pelo JS) */
@@ -73,8 +117,11 @@
     box-sizing: border-box;
 }
 
-/* Cabeçote (Casa 0) */
+/* Cabeçote (Casa 0) — permanece fixo à esquerda durante o scroll horizontal.
+   sticky (em vez de absolute) gruda a pestana na borda do #fretboard que rola. */
 .fret:first-child {
+    position: sticky;
+    left: 0;
     border-left: 8px solid #212121; /* Simula o Capotraste/Nut */
     background-color: #212121;
     z-index: 10;
