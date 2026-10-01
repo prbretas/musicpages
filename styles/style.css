@@ -385,6 +385,9 @@ button:hover {
   top: 0;
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .nav-links {
@@ -396,6 +399,93 @@ button:hover {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+  flex: 1 1 auto;
+}
+
+/* ============================= Theme Toggle Switch ============================= */
+.theme-toggle {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #4a9eff;
+  outline-offset: 3px;
+}
+
+.theme-toggle-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 58px;
+  height: 30px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background-color: #d7e3f0;
+  border: 1px solid #c2d2e3;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+  box-sizing: border-box;
+}
+
+.theme-toggle-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+  z-index: 1;
+  transition: opacity 0.25s ease;
+}
+
+.theme-icon-sun {
+  color: #f5a623;
+}
+
+.theme-icon-moon {
+  color: #4a5a74;
+}
+
+/* The sliding knob */
+.theme-toggle-thumb {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: left 0.25s ease, background-color 0.25s ease;
+}
+
+/* Checked = dark mode: knob slides right, track darkens */
+.theme-toggle[aria-checked="true"] .theme-toggle-track {
+  background-color: #2a3344;
+  border-color: #3f4a60;
+}
+
+.theme-toggle[aria-checked="true"] .theme-toggle-thumb {
+  left: calc(100% - 24px - 3px);
+  background-color: #e8eef7;
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  color: #495057;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.hamburger-btn:hover {
+  background-color: #e9ecef;
 }
 
 .nav-links li a {
@@ -411,18 +501,6 @@ button:hover {
 .nav-links li a:hover {
   background-color: #e9ecef;
   color: #007bff;
-}
-
-.hamburger-btn {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 8px 12px;
-  color: #495057;
-  border-radius: 6px;
-  transition: background-color 0.2s;
 }
 
 .hamburger-btn:hover {
@@ -1180,12 +1258,24 @@ body.popup-open {
   gap: 12px;
 }
 
+/* Preset buttons in a uniform 2-column layout so no button is left dangling
+   on its own row. The two groups stack vertically; each group is a 2x2 grid. */
 .popup-body .metronome-presets {
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .popup-body .preset-group {
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  flex-wrap: unset;
+}
+
+.popup-body .preset-btn {
+  width: 100%;
+  text-align: center;
 }
 
 /* ---- Custom scrollbar for popup bodies (light theme) ---- */
