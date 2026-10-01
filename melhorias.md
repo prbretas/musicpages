@@ -13,9 +13,15 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 | E — Correção do Dicionário de Acordes | Dados/correção | **P1** | **alta** | M | médio | Não (auditoria + fix) |
 | C — Responsividade mobile do Fretboard | UI/responsivo | P2 | média | M | médio | Parcial (ajuste de spec feita) |
 | F — Menu dropdown por tema | UI/navegação | P2 | baixa | M | médio | Recomendável |
+| H — Menu lateral retrátil (sidebar) | UI/navegação | P2 | média | M/L | **alto** | **Sim** |
+| I — Seletores Tônica/Escala no topo | UI/navegação | P2 | média | M | médio | **Sim** (com H) |
 | A — Afinador (Web Audio API) | Feature nova | P2 | baixa | **L** | baixo | **Sim** |
 | D — Gerador de backing tracks | Feature nova | P3 | baixa | **L** | baixo | **Sim** (dev exigiu) |
 | B — Treino de ouvido (Tone.js) | Feature nova | P3 | baixa | **L** | baixo | **Sim** (dev exigiu) |
+
+> Nota: F (dropdown por tema) e H (sidebar off-canvas) resolvem o mesmo problema de navegação por
+> caminhos diferentes — escolher UMA antes de implementar. I (seletores no topo) deve ser decidida
+> junto com a direção de navegação escolhida.
 
 ### Ordem de execução recomendada
 1. **G** — menor esforço, risco baixo, fecha pendência de spec já em andamento. (em andamento)
@@ -48,6 +54,8 @@ criar a spec em `.kiro/specs/` antes de implementar.
 - **Correção do Dicionário de Acordes** — corrigir voicings do LocalChordDB; avaliar Tonal.js/Uberchord. (Ideia E)
 - **Menu superior com dropdown por tema** — agrupar navegação em dropdowns no hover. (Ideia F)
 - **Estruturas de Escalas em popup** — concluir spec floating-popups (tasks 6.2 e 10.2). (Ideia G)
+- **Menu lateral retrátil (sidebar)** — navegação off-canvas que se esconde. (Ideia H)
+- **Seletores de Tônica/Escala no topo** — acesso rápido no header. (Ideia I)
 
 ### Concluído
 - ~~**README do projeto** — Criar um README completo e profissional para o repositório.~~
@@ -165,3 +173,33 @@ usuário quiser verificar as escalas — liberando espaço na tela principal.
 - Complexidade: Baixa/Média (concluir wiring de uma spec já em andamento)
 - Relacionada: floating-popups-layout (parcial — tasks 6.2 e 10.2)
 
+
+### IDEIA H — Menu lateral retrátil (sidebar off-canvas)
+Substituir/complementar a navegação do topo por um **menu lateral que se esconde** (off-canvas),
+aberto por um botão (hambúrguer) e deslizando a partir da borda. Objetivo: liberar o topo e
+organizar melhor a navegação conforme o app cresce (afinador, treino de ouvido, backing tracks).
+- Comportamento: abre/fecha com animação de slide, overlay escurecendo o fundo, fecha no Esc e ao
+  clicar fora; preserva `aria-expanded`/foco (acessível por teclado).
+- Decisão a tomar: a sidebar **substitui** o menu superior atual ou **coexiste** com ele? E como se
+  relaciona com a Ideia F (dropdown por tema)? São abordagens concorrentes para o mesmo problema de
+  navegação — escolher uma direção antes de implementar para evitar retrabalho.
+- Complexidade: Média/Alta (nova estrutura de navegação + animação + acessibilidade + responsivo)
+- Relacionada: ui-enhancements (menu), `scripts/script-nav.js`, `index.html` (`#headerNav`), Ideia F
+- Diretriz: **criar spec antes** — é redesenho de navegação, mexe em layout central.
+
+### IDEIA I — Seletores de Tônica e Escala no menu superior
+Mover os seletores de **tônica** e **tipo de escala** (hoje dentro de `#scaleCalcSection`) para o
+**menu superior**, deixando a seleção sempre visível e de acesso rápido, sem rolar até a calculadora.
+- A troca nos seletores continua disparando `calcularEscala()` e o evento `scale-changed` (que já
+  alimenta fretboard, acordes, círculos, etc.) — a integração existente é preservada.
+- Pontos a refinar: onde encaixar no header sem poluir (talvez junto da sidebar da Ideia H), rótulos
+  acessíveis, comportamento mobile, e se os seletores somem/ficam na seção original.
+- Complexidade: Média (reposicionar controles + garantir que o wiring de eventos continua intacto)
+- Relacionada: `scripts/script-escalas.js` (`calcularEscala`, `scale-changed`), `index.html`
+- Diretriz: **criar spec antes** — acopla com a Ideia H (navegação); decidir layout em conjunto.
+
+### Feitas nesta rodada (set/2026) — ajustes diretos sem spec
+- Popup do Metrônomo: presets realinhados em grid 2 colunas uniforme (sem botões soltos); card
+  interno neutralizado; sem scroll horizontal; scrollbar estilizado para light/dark.
+- Toggle de tema movido para o header como **switch sol/lua** (`role="switch"`, aria-checked,
+  persistência em localStorage preservada). Removido o antigo checkbox "Tema" do corpo da página.
