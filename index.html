@@ -28,6 +28,7 @@
     <script defer src="scripts/script-chord-diagrams.js"></script>
 
     <script src="./scripts/script-floating-popup.js" defer></script>
+    <script src="./scripts/script-sidebar.js" defer></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,9 +37,32 @@
 </head>
 
 <body>
-    <nav id="headerNav" class="header-nav" aria-label="Navegação principal">
-        <button class="hamburger-btn" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
-        <ul id="navLinks" class="nav-links">
+    <header id="topbar" class="topbar">
+        <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-expanded="false"
+            aria-controls="appSidebar" aria-label="Abrir menu de navegação" title="Menu">&#9776;</button>
+
+        <div class="topbar-selectors">
+            <label for="topbarTonica" class="sr-only">Tônica</label>
+            <select id="topbarTonica" aria-label="Tônica"></select>
+            <label for="topbarEscala" class="sr-only">Tipo de escala</label>
+            <select id="topbarEscala" aria-label="Tipo de escala"></select>
+        </div>
+
+        <button id="themeToggle" class="theme-toggle" type="button" role="switch"
+            aria-checked="false" aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro">
+            <span class="theme-toggle-track">
+                <span class="theme-toggle-icon theme-icon-sun" aria-hidden="true">☀</span>
+                <span class="theme-toggle-icon theme-icon-moon" aria-hidden="true">☾</span>
+                <span class="theme-toggle-thumb"></span>
+            </span>
+        </button>
+    </header>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" hidden></div>
+
+    <nav id="appSidebar" class="app-sidebar" aria-label="Navegação principal">
+        <button class="sidebar-close" type="button" aria-label="Fechar menu">&times;</button>
+        <ul class="sidebar-links">
             <li><a href="#metronomeContainer" data-popup="metronome">Metrônomo</a></li>
             <li><a href="#scaleCalcSection">Calculadora de Escalas</a></li>
             <li><a href="#" data-popup="scale-structure">Estruturas de Escalas</a></li>
@@ -49,14 +73,6 @@
             <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
             <li><a href="#songsterrContainer">Songsterr</a></li>
         </ul>
-        <button id="themeToggle" class="theme-toggle" type="button" role="switch"
-            aria-checked="false" aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro">
-            <span class="theme-toggle-track">
-                <span class="theme-toggle-icon theme-icon-sun" aria-hidden="true">☀</span>
-                <span class="theme-toggle-icon theme-icon-moon" aria-hidden="true">☾</span>
-                <span class="theme-toggle-thumb"></span>
-            </span>
-        </button>
     </nav>
     <div class="container">
         <div id="metronomeContainer" class="metronome-group popup-source-hidden">
