@@ -128,6 +128,20 @@ chord-visualizer.
   - Passo 1: auditar o LocalChordDB (84 shapes) e o cálculo do campo harmônico contra uma fonte
     confiável (ou Tonal.js), documentando quais acordes/notas estão errados.
   - Passo 2: corrigir os dados e, se fizer sentido, derivar notas/intervalos por biblioteca.
+- RESULTADO DA AUDITORIA (set/2026):
+  - Campo harmônico (`gerarCampoHarmonico` + `estruturasAcordes` em `script-escalas.js`): fórmulas de
+    intervalos corretas; campos maiores/menores/modos conferidos — sem erros encontrados.
+  - LocalChordDB (`script-chord-diagrams.js`): auditados 93 voicings calculando as notas tocadas
+    (afinação EADGBE) vs. a teoria. **4 voicings estavam ERRADOS**, todos acordes diminutos/meio-dim:
+    - `Edim` tinha C# (não pertence) e faltava G → corrigido para `[-1,7,8,9,8,-1]` (E,G,Bb).
+    - `Em7b5` tinha C# e faltava D → corrigido para `[-1,7,8,7,8,-1]` (E,G,Bb,D).
+    - `Fdim` tinha D e faltava Ab → corrigido para `[-1,8,9,10,9,-1]` (F,Ab,B).
+    - `F#dim` tinha D# e faltava A → corrigido para `[-1,9,10,11,10,-1]` (F#,A,C).
+  - Os 4 shapes antigos eram, na prática, acordes dim7 (4 notas) rotulados como tríades dim.
+  - Após correção: 93/93 voicings corretos (quinta omitida em dominantes é aceitável e não contada
+    como erro). Testes de chord-visualizer e chord-fretboard seguem passando (61).
+  - Pendente (opcional, fora do escopo da auditoria): avaliar Tonal.js/Uberchord para derivação
+    automática e expandir o DB para outros instrumentos.
 
 ### IDEIA F — Menu superior com dropdown por tema
 Transformar o menu header (hoje uma lista plana de links) em um menu com **dropdowns no hover**,

@@ -274,10 +274,10 @@ var ChordVisualizer = (function () {
       { chordName: 'E7', frets: [0, 2, 0, 1, 0, 0], fingers: [0, 2, 0, 1, 0, 0], startFret: 1, barre: null, source: 'local' }
     ],
     'Edim': [
-      { chordName: 'Edim', frets: [0, 1, 2, 3, 2, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 1, barre: null, source: 'local' }
+      { chordName: 'Edim', frets: [-1, 7, 8, 9, 8, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 7, barre: null, source: 'local' }
     ],
     'Em7b5': [
-      { chordName: 'Em7b5', frets: [0, 1, 2, 0, 2, -1], fingers: [0, 1, 2, 0, 3, 0], startFret: 1, barre: null, source: 'local' }
+      { chordName: 'Em7b5', frets: [-1, 7, 8, 7, 8, -1], fingers: [0, 1, 3, 2, 4, 0], startFret: 7, barre: null, source: 'local' }
     ],
 
     // ================================================================
@@ -300,7 +300,7 @@ var ChordVisualizer = (function () {
       { chordName: 'F7', frets: [1, 3, 1, 2, 1, 1], fingers: [1, 3, 1, 2, 1, 1], startFret: 1, barre: { fret: 1, fromString: 0, toString: 5 }, source: 'local' }
     ],
     'Fdim': [
-      { chordName: 'Fdim', frets: [1, 2, 3, 4, 3, -1], fingers: [1, 2, 3, 4, 3, 0], startFret: 1, barre: null, source: 'local' }
+      { chordName: 'Fdim', frets: [-1, 8, 9, 10, 9, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 8, barre: null, source: 'local' }
     ],
     'Fm7b5': [
       { chordName: 'Fm7b5', frets: [1, 2, 3, 1, 4, -1], fingers: [1, 2, 3, 1, 4, 0], startFret: 1, barre: { fret: 1, fromString: 0, toString: 3 }, source: 'local' }
@@ -325,7 +325,7 @@ var ChordVisualizer = (function () {
       { chordName: 'F#7', frets: [2, 4, 2, 3, 2, 2], fingers: [1, 3, 1, 2, 1, 1], startFret: 2, barre: { fret: 2, fromString: 0, toString: 5 }, source: 'local' }
     ],
     'F#dim': [
-      { chordName: 'F#dim', frets: [2, 3, 4, 5, 4, -1], fingers: [1, 2, 3, 4, 3, 0], startFret: 2, barre: null, source: 'local' }
+      { chordName: 'F#dim', frets: [-1, 9, 10, 11, 10, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 9, barre: null, source: 'local' }
     ],
     'F#m7b5': [
       { chordName: 'F#m7b5', frets: [2, 3, 4, 2, 5, -1], fingers: [1, 2, 3, 1, 4, 0], startFret: 2, barre: { fret: 2, fromString: 0, toString: 3 }, source: 'local' }
