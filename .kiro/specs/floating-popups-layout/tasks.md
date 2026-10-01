@@ -117,8 +117,8 @@ Implementação de um sistema genérico de popups flutuantes em vanilla JavaScri
     - Arquivo: `tests/cases/floating-popups-layout/popup-lifecycle.unit.spec.js`
     - _Requirements: 1.1, 1.6, 1.7, 6.4, 6.5, 6.7_
 
-- [ ] 6. Implementar instâncias específicas (Metrônomo e Estrutura de Escalas)
-  - [ ] 6.1 Configurar instância do popup do Metrônomo
+- [x] 6. Implementar instâncias específicas (Metrônomo e Estrutura de Escalas)
+  - [x] 6.1 Configurar instância do popup do Metrônomo
     - Criar instância via `FloatingPopup.create` com config: id `metronome-popup`, title `Metrônomo Digital`, contentSelector `#metronomeContainer`, size `380px` width
     - Implementar callback `onClose`: verificar se metrônomo está tocando, se sim parar áudio e resetar botão para "▶ Iniciar"
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7_

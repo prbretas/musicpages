@@ -959,7 +959,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var scaleStructurePopup = FloatingPopup.create({
     id: 'scale-structure-popup',
     title: '🗺️ Estruturas de Escalas',
-    contentSelector: '#tabelaGeralEscalasResultado',
+    contentSelector: '#scaleStructureSection',
     menuItemSelector: '[data-popup="scale-structure"]',
     size: { width: '600px', height: '500px' },
     onOpen: function () {

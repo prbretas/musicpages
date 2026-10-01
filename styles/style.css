@@ -1081,6 +1081,16 @@ body.popup-open {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* Content that lives in the page only to be moved into a popup.
+   Hidden while in the normal page flow; shown once inside the popup body. */
+.popup-source-hidden {
+  display: none;
+}
+
+.popup-body .popup-source-hidden {
+  display: block;
+}
+
 /* Smooth appearance when displayed */
 .floating-popup[style*="display: none"] {
   opacity: 0;
