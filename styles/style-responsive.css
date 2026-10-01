@@ -118,6 +118,20 @@
     width: min(300px, 85vw);
   }
 
+  /* Fretboard: tighter container padding + slightly larger, touch-friendly
+     note-cells. Columns are fixed at 40px so 24px cells never overlap, and the
+     board scrolls horizontally (see #fretboard overflow-x). */
+  #fretboardContainer {
+    padding: 10px;
+  }
+
+  .note-cell-fret {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 0.6rem;
+  }
+
   /* Layout Geral */
   .container {
     padding: 15px;
