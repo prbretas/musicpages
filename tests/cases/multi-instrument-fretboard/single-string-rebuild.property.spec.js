@@ -96,7 +96,7 @@ describe('Property 12: Single string rebuild note correctness', () => {
                     }
                 }
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });

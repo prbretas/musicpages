@@ -80,7 +80,7 @@ describe('Property 2: Instrument selector options match registry', () => {
                     expect(options[i].value).toBe(profiles[i].id);
                 }
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });

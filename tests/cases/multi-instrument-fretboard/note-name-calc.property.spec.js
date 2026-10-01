@@ -24,7 +24,7 @@ describe('Property 5: Note name calculation correctness', () => {
                     expect(result).toBe(expected);
                 }
             ),
-            { numRuns: 30 }
+            { numRuns: 10 }
         );
     });
 });

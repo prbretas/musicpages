@@ -274,10 +274,10 @@ var ChordVisualizer = (function () {
       { chordName: 'E7', frets: [0, 2, 0, 1, 0, 0], fingers: [0, 2, 0, 1, 0, 0], startFret: 1, barre: null, source: 'local' }
     ],
     'Edim': [
-      { chordName: 'Edim', frets: [0, 1, 2, 3, 2, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 1, barre: null, source: 'local' }
+      { chordName: 'Edim', frets: [-1, 7, 8, 9, 8, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 7, barre: null, source: 'local' }
     ],
     'Em7b5': [
-      { chordName: 'Em7b5', frets: [0, 1, 2, 0, 2, -1], fingers: [0, 1, 2, 0, 3, 0], startFret: 1, barre: null, source: 'local' }
+      { chordName: 'Em7b5', frets: [-1, 7, 8, 7, 8, -1], fingers: [0, 1, 3, 2, 4, 0], startFret: 7, barre: null, source: 'local' }
     ],
 
     // ================================================================
@@ -300,7 +300,7 @@ var ChordVisualizer = (function () {
       { chordName: 'F7', frets: [1, 3, 1, 2, 1, 1], fingers: [1, 3, 1, 2, 1, 1], startFret: 1, barre: { fret: 1, fromString: 0, toString: 5 }, source: 'local' }
     ],
     'Fdim': [
-      { chordName: 'Fdim', frets: [1, 2, 3, 4, 3, -1], fingers: [1, 2, 3, 4, 3, 0], startFret: 1, barre: null, source: 'local' }
+      { chordName: 'Fdim', frets: [-1, 8, 9, 10, 9, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 8, barre: null, source: 'local' }
     ],
     'Fm7b5': [
       { chordName: 'Fm7b5', frets: [1, 2, 3, 1, 4, -1], fingers: [1, 2, 3, 1, 4, 0], startFret: 1, barre: { fret: 1, fromString: 0, toString: 3 }, source: 'local' }
@@ -325,7 +325,7 @@ var ChordVisualizer = (function () {
       { chordName: 'F#7', frets: [2, 4, 2, 3, 2, 2], fingers: [1, 3, 1, 2, 1, 1], startFret: 2, barre: { fret: 2, fromString: 0, toString: 5 }, source: 'local' }
     ],
     'F#dim': [
-      { chordName: 'F#dim', frets: [2, 3, 4, 5, 4, -1], fingers: [1, 2, 3, 4, 3, 0], startFret: 2, barre: null, source: 'local' }
+      { chordName: 'F#dim', frets: [-1, 9, 10, 11, 10, -1], fingers: [0, 1, 2, 4, 3, 0], startFret: 9, barre: null, source: 'local' }
     ],
     'F#m7b5': [
       { chordName: 'F#m7b5', frets: [2, 3, 4, 2, 5, -1], fingers: [1, 2, 3, 1, 4, 0], startFret: 2, barre: { fret: 2, fromString: 0, toString: 3 }, source: 'local' }
@@ -1012,6 +1012,9 @@ var ChordVisualizer = (function () {
   /** @type {ChordInfo[]} Last computed harmonic field (for re-render on instrument change) */
   var lastHarmonicField = [];
 
+  /** @type {HTMLElement|null} Currently active chord card element */
+  var _activeChordCard = null;
+
   // ------------------------------------------------------------------
   // Public API
   // ------------------------------------------------------------------
@@ -1169,6 +1172,22 @@ var ChordVisualizer = (function () {
         }
       }
 
+      // --- Accessibility & interaction: tabindex + click/keydown handlers ---
+      // Requirements: 1.4, 6.1, 6.2
+      card.setAttribute('tabindex', '0');
+
+      (function (chordRef, cardEl) {
+        cardEl.addEventListener('click', function () {
+          handleChordCardClick(chordRef, cardEl);
+        });
+        cardEl.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleChordCardClick(chordRef, cardEl);
+          }
+        });
+      })(chord, card);
+
       grid.appendChild(card);
     }
 
@@ -1200,6 +1219,58 @@ var ChordVisualizer = (function () {
   }
 
   // ------------------------------------------------------------------
+  // Chord Card Click Handler
+  // Requirements: 1.1, 1.2, 1.3, 5.1, 5.2, 5.3
+  // ------------------------------------------------------------------
+
+  /**
+   * Handles a click on a ChordCard element.
+   * - If chord has no shapes available, does nothing.
+   * - If the card is already active (toggle off): dispatches `chord-deselected`, removes active class.
+   * - Otherwise: deactivates previous card, activates clicked card, dispatches `chord-selected`.
+   *
+   * @param {ChordInfo} chord - The chord info object (has .name, .root, .quality)
+   * @param {HTMLElement} cardElement - The DOM element of the clicked card
+   */
+  function handleChordCardClick(chord, cardElement) {
+    // Requirement 1.3: no shapes → do not dispatch
+    var shapes = LocalChordDB.getChordShapes(chord.name);
+    if (!shapes || shapes.length === 0) {
+      return;
+    }
+
+    // Requirement 4.3 / 5.2: toggle off if already active
+    if (cardElement.classList.contains('chord-card-active')) {
+      cardElement.classList.remove('chord-card-active');
+      _activeChordCard = null;
+      document.dispatchEvent(new CustomEvent('chord-deselected'));
+      return;
+    }
+
+    // Requirement 5.2: remove active class from previously active card
+    if (_activeChordCard) {
+      _activeChordCard.classList.remove('chord-card-active');
+    }
+
+    // Requirement 5.1: apply active class to clicked card
+    cardElement.classList.add('chord-card-active');
+    _activeChordCard = cardElement;
+
+    // Extract root from chord name (handles sharps/flats)
+    var parsed = parseChordName(chord.name);
+    var root = parsed.root;
+
+    // Requirement 1.1, 1.2: dispatch chord-selected with full detail
+    document.dispatchEvent(new CustomEvent('chord-selected', {
+      detail: {
+        chordName: chord.name,
+        root: root,
+        shapes: shapes
+      }
+    }));
+  }
+
+  // ------------------------------------------------------------------
   // Public API object
   // ------------------------------------------------------------------
 
@@ -1208,6 +1279,7 @@ var ChordVisualizer = (function () {
     render: render,
     playChord: playChord,
     destroy: destroy,
+    handleChordCardClick: handleChordCardClick,
     // Expose helpers for testability
     parseChordName: parseChordName,
     formatChordName: formatChordName,
@@ -1215,7 +1287,10 @@ var ChordVisualizer = (function () {
     computeHarmonicField: computeHarmonicField,
     getCampoHarmonico: getCampoHarmonico,
     LocalChordDB: LocalChordDB,
-    SVGRenderer: SVGRenderer
+    SVGRenderer: SVGRenderer,
+    // Expose internal state for testability
+    getActiveChordCard: function () { return _activeChordCard; },
+    setActiveChordCard: function (el) { _activeChordCard = el; }
   };
 
   return api;
@@ -1229,6 +1304,7 @@ var ChordVisualizer = (function () {
 // Expor no escopo global do navegador
 if (typeof window !== 'undefined') {
   window.ChordVisualizer = ChordVisualizer;
+  window.handleChordCardClick = ChordVisualizer.handleChordCardClick;
 }
 
 // Initialize on DOMContentLoaded (Requirements: 9.3)
@@ -1240,6 +1316,16 @@ if (typeof document !== 'undefined') {
   } else {
     ChordVisualizer.init('#chordVisualizerContainer');
   }
+}
+
+// Listen for scale-changed to clear active chord card selection (Requirements: 5.3)
+if (typeof document !== 'undefined') {
+  document.addEventListener('scale-changed', function () {
+    var activeCards = document.querySelectorAll('.chord-card-active');
+    for (var i = 0; i < activeCards.length; i++) {
+      activeCards[i].classList.remove('chord-card-active');
+    }
+  });
 }
 
 // Export condicional para testabilidade com Node.js / Vitest

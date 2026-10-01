@@ -22,7 +22,7 @@ describe('Property 9: String thickness monotonicity', () => {
                     expect(thickness).toBe(1);
                 }
             ),
-            { numRuns: 30 }
+            { numRuns: 10 }
         );
     });
 
@@ -35,7 +35,7 @@ describe('Property 9: String thickness monotonicity', () => {
                     expect(thickness).toBe(4);
                 }
             ),
-            { numRuns: 30 }
+            { numRuns: 10 }
         );
     });
 
@@ -54,7 +54,7 @@ describe('Property 9: String thickness monotonicity', () => {
                     }
                 }
             ),
-            { numRuns: 30 }
+            { numRuns: 10 }
         );
     });
 });

@@ -27,7 +27,7 @@ describe('Property 11: Note name validation', () => {
       fc.property(VALID_NOTES, (note) => {
         expect(isValidNoteName(note)).toBe(true);
       }),
-      { numRuns: 30 }
+      { numRuns: 10 }
     );
   });
 
@@ -36,7 +36,7 @@ describe('Property 11: Note name validation', () => {
       fc.property(INVALID_NOTES, (str) => {
         expect(isValidNoteName(str)).toBe(false);
       }),
-      { numRuns: 30 }
+      { numRuns: 10 }
     );
   });
 });

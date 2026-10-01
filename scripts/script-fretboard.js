@@ -50,6 +50,15 @@ var _activeFretboardState = {
 /** @type {{ scaleNotes: string[]|null, tonic: string|null }} */
 var _lastScaleState = { scaleNotes: null, tonic: null };
 
+/** @type {'scale'|'chord'} Tracks whether fretboard shows scale or chord highlighting */
+var _highlightMode = 'scale';
+
+/** @type {{ shapes: Object[], root: string, currentIndex: number }|null} Active chord state for event-driven highlighting */
+var _activeChordState = null;
+
+/** @type {{ destroy: Function, update: Function }|null} Reference to the active ShapeNavigator instance */
+var _activeShapeNavigator = null;
+
 // ------------------------------------------------------------------
 // Helper functions
 // ------------------------------------------------------------------
@@ -123,6 +132,270 @@ function calculateFretboardDimensions(strings, frets) {
     var rawHeight = strings * STRING_HEIGHT;
     var height = Math.min(rawHeight, MAX_HEIGHT);
     return { width: width, height: height };
+}
+
+// ------------------------------------------------------------------
+// Chord Shape Mapping
+// ------------------------------------------------------------------
+
+/**
+ * Mapeia um ChordShape para um array de posições absolutas no fretboard.
+ * Função pura — não acessa DOM.
+ *
+ * @param {Object} shape - O shape a mapear { frets: number[], fingers: number[], startFret: number, barre: object|null }
+ * @param {number} numStrings - Número de cordas do instrumento
+ * @param {string} rootNote - Nota raiz do acorde (ex: "A", "C#")
+ * @returns {{ stringIndex: number, fret: number, isRoot: boolean }[]}
+ *   Array de posições (string data-index + fret absoluto), excluindo muted (-1)
+ *
+ * Requirements: 2.2, 2.3, 2.4, 2.5, 2.6
+ */
+function mapShapeToPositions(shape, numStrings, rootNote) {
+    var positions = [];
+    var frets = shape.frets || [];
+    var startFret = shape.startFret || 0;
+    var tuning = _activeFretboardState.tuning;
+    var rootIndex = getChromaticIndex(rootNote);
+    var count = Math.min(frets.length, numStrings);
+
+    for (var i = 0; i < count; i++) {
+        var fretValue = frets[i];
+
+        // Skip muted strings (fret === -1)
+        if (fretValue === -1) {
+            continue;
+        }
+
+        // Calculate absolute fret number
+        // Open string (fret 0) remains 0; others are startFret + fretValue - 1
+        var absoluteFret;
+        if (fretValue === 0) {
+            absoluteFret = 0;
+        } else {
+            absoluteFret = startFret + fretValue - 1;
+        }
+
+        // Determine the note at this position using the tuning
+        var openNoteIndex = getChromaticIndex(tuning[i]);
+        if (openNoteIndex === -1) {
+            openNoteIndex = 0; // fallback
+        }
+        var noteAtPosition = (openNoteIndex + absoluteFret) % 12;
+
+        // Determine if this position is the root note
+        var isRoot = (rootIndex !== -1) && (noteAtPosition === rootIndex);
+
+        positions.push({
+            stringIndex: i,
+            fret: absoluteFret,
+            isRoot: isRoot
+        });
+    }
+
+    return positions;
+}
+
+// Expose globally for testability
+if (typeof window !== 'undefined') {
+    window.mapShapeToPositions = mapShapeToPositions;
+}
+
+// ------------------------------------------------------------------
+// Chord Highlighter
+// ------------------------------------------------------------------
+
+/**
+ * Aplica destaque de acorde no fretboard baseado em um ChordShape.
+ * Remove destaques anteriores (escala ou acorde) antes de aplicar.
+ *
+ * @param {Object} shape - Shape ativo a destacar
+ * @param {string} rootNote - Nota raiz do acorde (ex: "A", "C#")
+ * @param {number} numStrings - Número de cordas do instrumento ativo
+ *
+ * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6
+ */
+function highlightChordOnFretboard(shape, rootNote, numStrings) {
+    // 1. Get mapped positions from the shape
+    var positions = mapShapeToPositions(shape, numStrings, rootNote);
+
+    // 2. Remove all existing scale and chord highlights from note cells
+    var allCells = document.querySelectorAll('.note-cell-fret');
+    for (var i = 0; i < allCells.length; i++) {
+        allCells[i].classList.remove('in-scale', 'tonic', 'in-chord', 'chord-root');
+    }
+
+    // 3. Apply chord highlighting on matching cells
+    for (var j = 0; j < positions.length; j++) {
+        var pos = positions[j];
+        var cell = document.querySelector(
+            '.note-cell-fret[data-string="' + pos.stringIndex + '"][data-fret="' + pos.fret + '"]'
+        );
+        if (cell) {
+            cell.classList.add('in-chord');
+            if (pos.isRoot) {
+                cell.classList.add('chord-root');
+            }
+        }
+    }
+
+    // 4. Update highlight mode
+    _highlightMode = 'chord';
+}
+
+// Expose globally for testability
+if (typeof window !== 'undefined') {
+    window.highlightChordOnFretboard = highlightChordOnFretboard;
+}
+
+/**
+ * Remove todo destaque de acorde do fretboard.
+ * Remove classes `in-chord` e `chord-root` de todas as note cells.
+ * Não restaura destaque de escala (responsabilidade do caller).
+ *
+ * Requirements: 4.1, 4.4
+ */
+function clearChordHighlight() {
+    var allCells = document.querySelectorAll('.note-cell-fret');
+    for (var i = 0; i < allCells.length; i++) {
+        allCells[i].classList.remove('in-chord', 'chord-root');
+    }
+}
+
+// Expose globally for testability
+if (typeof window !== 'undefined') {
+    window.clearChordHighlight = clearChordHighlight;
+}
+
+// ------------------------------------------------------------------
+// Voicing Navigator (cyclic navigation logic)
+// ------------------------------------------------------------------
+
+/**
+ * Creates a voicing navigator for cycling through chord shapes.
+ * Pure state manager — no DOM interaction.
+ *
+ * @param {number} total - Total number of shapes available (must be >= 1)
+ * @returns {{ next: Function, prev: Function, getIndex: Function, getIndicator: Function }}
+ *
+ * Requirements: 3.3, 3.4, 3.5
+ */
+function createVoicingNavigator(total) {
+    var currentIndex = 0;
+
+    return {
+        /** Advance to next shape with cyclic wrap */
+        next: function() {
+            currentIndex = (currentIndex + 1) % total;
+            return currentIndex;
+        },
+        /** Go to previous shape with cyclic wrap */
+        prev: function() {
+            currentIndex = (currentIndex - 1 + total) % total;
+            return currentIndex;
+        },
+        /** Returns the current 0-based index */
+        getIndex: function() {
+            return currentIndex;
+        },
+        /** Returns position indicator string in "N/T" format (1-indexed) */
+        getIndicator: function() {
+            return (currentIndex + 1) + "/" + total;
+        }
+    };
+}
+
+// Expose globally for testability
+if (typeof window !== 'undefined') {
+    window.createVoicingNavigator = createVoicingNavigator;
+}
+
+// ------------------------------------------------------------------
+// Fretboard Shape Navigator (DOM component)
+// ------------------------------------------------------------------
+
+/**
+ * Cria componente de navegação de shapes no container do fretboard.
+ * Se shapes.length <= 1, retorna objeto noop (destroy/update fazem nada).
+ * Se shapes.length > 1, cria DOM com botões ◀ ▶ e indicador "N/T".
+ *
+ * @param {Object[]} shapes - Array de ChordShapes disponíveis
+ * @param {Function} onNavigate - Callback chamado com novo index ao navegar
+ * @returns {{ destroy: Function, update: Function }}
+ *
+ * Requirements: 3.1, 3.2, 3.5, 6.3, 6.4
+ */
+function createFretboardShapeNavigator(shapes, onNavigate) {
+    // Noop case: single shape or empty — no navigator needed
+    if (!shapes || shapes.length <= 1) {
+        return {
+            destroy: function() {},
+            update: function() {}
+        };
+    }
+
+    // Create cycling logic via createVoicingNavigator
+    var navigator = createVoicingNavigator(shapes.length);
+
+    // Build DOM structure
+    var container = document.createElement('div');
+    container.className = 'fretboard-shape-nav';
+
+    var prevButton = document.createElement('button');
+    prevButton.setAttribute('aria-label', 'Shape anterior');
+    prevButton.textContent = '\u25C0'; // ◀
+
+    var indicator = document.createElement('span');
+    indicator.className = 'chord-voicing-indicator';
+    indicator.textContent = navigator.getIndicator();
+
+    var nextButton = document.createElement('button');
+    nextButton.setAttribute('aria-label', 'Próximo shape');
+    nextButton.textContent = '\u25B6'; // ▶
+
+    container.appendChild(prevButton);
+    container.appendChild(indicator);
+    container.appendChild(nextButton);
+
+    // Event handlers
+    prevButton.addEventListener('click', function() {
+        var newIndex = navigator.prev();
+        indicator.textContent = navigator.getIndicator();
+        if (typeof onNavigate === 'function') {
+            onNavigate(newIndex);
+        }
+    });
+
+    nextButton.addEventListener('click', function() {
+        var newIndex = navigator.next();
+        indicator.textContent = navigator.getIndicator();
+        if (typeof onNavigate === 'function') {
+            onNavigate(newIndex);
+        }
+    });
+
+    // Append to fretboard container
+    var fretboardContainer = document.getElementById('fretboardContainer');
+    if (fretboardContainer) {
+        fretboardContainer.appendChild(container);
+    }
+
+    return {
+        /** Remove o componente do DOM */
+        destroy: function() {
+            if (container && container.parentNode) {
+                container.parentNode.removeChild(container);
+            }
+        },
+        /** Atualiza o indicador com index/total fornecidos externamente */
+        update: function(index, total) {
+            indicator.textContent = (index + 1) + '/' + total;
+        }
+    };
+}
+
+// Expose globally for testability
+if (typeof window !== 'undefined') {
+    window.createFretboardShapeNavigator = createFretboardShapeNavigator;
 }
 
 // ------------------------------------------------------------------
@@ -477,6 +750,99 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ------------------------------------------------------------------
+// Event Listener: chord-selected
+// ------------------------------------------------------------------
+
+document.addEventListener('chord-selected', function(event) {
+    var detail = event.detail;
+    if (!detail || !detail.shapes || detail.shapes.length === 0) return;
+
+    var chordName = detail.chordName;
+    var root = detail.root;
+    var shapes = detail.shapes;
+    var numStrings = _activeFretboardState.tuning.length;
+
+    // Update internal state
+    _highlightMode = 'chord';
+    _activeChordState = {
+        shapes: shapes,
+        root: root,
+        currentIndex: 0
+    };
+
+    // Highlight first shape
+    highlightChordOnFretboard(shapes[0], root, numStrings);
+
+    // Destroy previous navigator if exists
+    if (_activeShapeNavigator) {
+        _activeShapeNavigator.destroy();
+        _activeShapeNavigator = null;
+    }
+
+    // Create ShapeNavigator if more than 1 shape
+    if (shapes.length > 1) {
+        _activeShapeNavigator = createFretboardShapeNavigator(shapes, function(newIndex) {
+            _activeChordState.currentIndex = newIndex;
+            highlightChordOnFretboard(shapes[newIndex], root, numStrings);
+        });
+    }
+});
+
+// ------------------------------------------------------------------
+// Event Listener: chord-deselected
+// Requirements: 4.3, 4.4
+// ------------------------------------------------------------------
+
+document.addEventListener('chord-deselected', function() {
+    // 1. Clear chord highlighting from fretboard
+    clearChordHighlight();
+
+    // 2. Destroy ShapeNavigator if active
+    if (_activeShapeNavigator) {
+        _activeShapeNavigator.destroy();
+        _activeShapeNavigator = null;
+    }
+
+    // 3. Restore scale highlight if scale state is available
+    if (_lastScaleState.scaleNotes && _lastScaleState.scaleNotes.length > 0) {
+        highlightFretboardNotes(_lastScaleState.scaleNotes, _lastScaleState.tonic);
+    }
+
+    // 4. Reset state back to scale mode
+    _highlightMode = 'scale';
+    _activeChordState = null;
+});
+
+// ------------------------------------------------------------------
+// Event Listener: scale-changed
+// Requirements: 4.1, 4.2
+// ------------------------------------------------------------------
+
+document.addEventListener('scale-changed', function(event) {
+    var detail = event.detail;
+    if (!detail || !detail.notes || !detail.tonica) return;
+
+    // If currently in chord mode, clean up chord state first
+    if (_highlightMode === 'chord') {
+        clearChordHighlight();
+
+        // Destroy ShapeNavigator if active
+        if (_activeShapeNavigator) {
+            _activeShapeNavigator.destroy();
+            _activeShapeNavigator = null;
+        }
+
+        _activeChordState = null;
+    }
+
+    // Update highlight mode to scale
+    _highlightMode = 'scale';
+
+    // Apply the new scale highlight (and store state via highlightFretboardNotes)
+    highlightFretboardNotes(detail.notes, detail.tonica);
+});
+
+// ------------------------------------------------------------------
 // Conditional module.exports for Vitest testability
 // ------------------------------------------------------------------
 if (typeof module !== 'undefined' && module.exports) {
@@ -491,12 +857,24 @@ if (typeof module !== 'undefined' && module.exports) {
         calculateMidi: calculateMidi,
         highlightFretboardNotes: highlightFretboardNotes,
         normalizeToSharp: normalizeToSharp,
+        mapShapeToPositions: mapShapeToPositions,
+        highlightChordOnFretboard: highlightChordOnFretboard,
+        clearChordHighlight: clearChordHighlight,
+        createVoicingNavigator: createVoicingNavigator,
+        createFretboardShapeNavigator: createFretboardShapeNavigator,
         NOTE_NAMES: NOTE_NAMES,
         NOTE_COLORS: NOTE_COLORS,
         initializeFretboard: initializeFretboard,
         buildStringRow: buildStringRow,
         // Expose state getters for testing
         _getLastScaleState: function() { return _lastScaleState; },
-        _setLastScaleState: function(state) { _lastScaleState = state; }
+        _setLastScaleState: function(state) { _lastScaleState = state; },
+        _setActiveFretboardState: function(state) { _activeFretboardState = state; },
+        _getHighlightMode: function() { return _highlightMode; },
+        _setHighlightMode: function(mode) { _highlightMode = mode; },
+        _getActiveChordState: function() { return _activeChordState; },
+        _setActiveChordState: function(state) { _activeChordState = state; },
+        _getActiveShapeNavigator: function() { return _activeShapeNavigator; },
+        _setActiveShapeNavigator: function(nav) { _activeShapeNavigator = nav; }
     };
 }

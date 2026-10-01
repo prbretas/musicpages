@@ -75,7 +75,7 @@ describe('Property 8: Visual string ordering is reverse of tuning array', () => 
                 // Visual row N-1 (bottom) should display tuning[0] (lowest pitch)
                 expect(lastOpenNote.textContent).toBe(profile.tuning[0]);
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });

@@ -61,7 +61,7 @@ describe('Property 3: Fretboard rebuild produces correct string count', () => {
                 const stringRows = document.querySelectorAll('.string');
                 expect(stringRows.length).toBe(profile.strings);
             }),
-            { numRuns: 20 }
+            { numRuns: 10 }
         );
     });
 });

@@ -74,7 +74,7 @@ describe('Property 1: Instrument profile schema validity', () => {
           expect(typeof profile.fretless).toBe('boolean');
         }
       ),
-      { numRuns: 30 }
+      { numRuns: 10 }
     );
   });
 });

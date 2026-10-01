@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "test:ci": "vitest run"
   },
   "devDependencies": {
     "fast-check": "^4.9.0",

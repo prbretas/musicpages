@@ -413,3 +413,223 @@ body.dark .tecla.destaque-preta {
     color: #ffffff !important;
     border: 1px solid #b8cc00 !important;
 }
+
+
+/* ==========================================
+   Scale Shapes (CAGED) - Shape Color Classes
+   ==========================================
+   Classes shape-0 to shape-11 apply colored backgrounds
+   to note-cells when shapes are active. Semi-transparent
+   backgrounds keep note text readable.
+   Priority: lower index wins for overlapping notes (CSS
+   order handles this — first class applied takes priority).
+   ========================================== */
+
+/* Transition for opacity changes on hover interaction */
+.note-cell-fret[class*="shape-"] {
+    transition: opacity 150ms ease;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Shape Colors — semi-transparent for readability */
+.note-cell-fret.shape-0 {
+    background-color: rgba(220, 38, 38, 0.7) !important;  /* red */
+    border-color: rgba(220, 38, 38, 0.9) !important;
+}
+
+.note-cell-fret.shape-1 {
+    background-color: rgba(37, 99, 235, 0.7) !important;  /* blue */
+    border-color: rgba(37, 99, 235, 0.9) !important;
+}
+
+.note-cell-fret.shape-2 {
+    background-color: rgba(22, 163, 74, 0.7) !important;  /* green */
+    border-color: rgba(22, 163, 74, 0.9) !important;
+}
+
+.note-cell-fret.shape-3 {
+    background-color: rgba(234, 88, 12, 0.7) !important;  /* orange */
+    border-color: rgba(234, 88, 12, 0.9) !important;
+}
+
+.note-cell-fret.shape-4 {
+    background-color: rgba(147, 51, 234, 0.7) !important;  /* purple */
+    border-color: rgba(147, 51, 234, 0.9) !important;
+}
+
+.note-cell-fret.shape-5 {
+    background-color: rgba(6, 182, 212, 0.7) !important;  /* cyan */
+    border-color: rgba(6, 182, 212, 0.9) !important;
+}
+
+.note-cell-fret.shape-6 {
+    background-color: rgba(219, 39, 119, 0.7) !important;  /* magenta */
+    border-color: rgba(219, 39, 119, 0.9) !important;
+}
+
+.note-cell-fret.shape-7 {
+    background-color: rgba(180, 160, 0, 0.7) !important;  /* dark-yellow */
+    border-color: rgba(180, 160, 0, 0.9) !important;
+}
+
+.note-cell-fret.shape-8 {
+    background-color: rgba(236, 72, 153, 0.7) !important;  /* pink */
+    border-color: rgba(236, 72, 153, 0.9) !important;
+}
+
+.note-cell-fret.shape-9 {
+    background-color: rgba(76, 175, 80, 0.7) !important;  /* lime-green */
+    border-color: rgba(76, 175, 80, 0.9) !important;
+}
+
+.note-cell-fret.shape-10 {
+    background-color: rgba(63, 81, 181, 0.7) !important;  /* indigo */
+    border-color: rgba(63, 81, 181, 0.9) !important;
+}
+
+.note-cell-fret.shape-11 {
+    background-color: rgba(141, 110, 99, 0.7) !important;  /* brown */
+    border-color: rgba(141, 110, 99, 0.9) !important;
+}
+
+/* Tonic priority — gold border and scale preserved over shape colors */
+.note-cell-fret.tonic[class*="shape-"] {
+    border: 3px solid #ffc107 !important;
+    transform: translate(-50%, -50%) scale(1.3);
+    z-index: 8;
+}
+
+/* Dark mode adjustments for shape colors (same colors, slightly brighter alpha) */
+body.dark .note-cell-fret[class*="shape-"] {
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* ------------------------------------------------------------------
+   Shape Toggle Panel
+   ------------------------------------------------------------------ */
+
+.shape-toggle-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 0;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.shape-toggle-panel button {
+    transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.shape-toggle-panel button:hover {
+    opacity: 0.85;
+}
+
+.shape-toggle-panel button:focus {
+    outline: 2px solid #ffc107;
+    outline-offset: 2px;
+}
+
+
+/* ==========================================
+   Chord Fretboard Highlighting
+   ========================================== */
+
+/* Chord note highlight — violet/purple tone, visually distinct from .in-scale */
+.note-cell-fret.in-chord {
+    background-color: rgba(139, 92, 246, 0.85); /* violet */
+    color: #ffffff;
+    border: 2px solid #7c3aed;
+    transform: translate(-50%, -50%) scale(1.15);
+    z-index: 6;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Chord root — gold border for emphasis, similar to tonic treatment */
+.note-cell-fret.in-chord.chord-root {
+    border: 3px solid #ffd700;
+    transform: translate(-50%, -50%) scale(1.3);
+    z-index: 8;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+/* Dark mode adjustments for chord highlight */
+body.dark .note-cell-fret.in-chord {
+    background-color: rgba(167, 139, 250, 0.85);
+    border-color: #a78bfa;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+body.dark .note-cell-fret.in-chord.chord-root {
+    border-color: #ffd700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* ==========================================
+   Fretboard Shape Navigator
+   ========================================== */
+
+/* Container flex for shape navigation buttons and indicator */
+.fretboard-shape-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px 0;
+    margin-top: 10px;
+}
+
+/* Navigation buttons (◀ ▶) */
+.fretboard-shape-nav button {
+    background-color: #f0f0f0;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: #495057;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    line-height: 1;
+}
+
+.fretboard-shape-nav button:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+.fretboard-shape-nav button:active {
+    background-color: #d5d5d5;
+}
+
+.fretboard-shape-nav button:focus {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+}
+
+/* Shape indicator text (e.g. "1/3") */
+.fretboard-shape-nav .shape-indicator {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #495057;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Dark mode for shape navigator */
+body.dark .fretboard-shape-nav button {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body.dark .fretboard-shape-nav button:hover {
+    background-color: #444;
+    border-color: #777;
+}
+
+body.dark .fretboard-shape-nav .shape-indicator {
+    color: #e0e0e0;
+}

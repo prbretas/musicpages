@@ -99,12 +99,29 @@
     display: block;
   }
 
+  /* Keep hamburger (left) and theme toggle (right) on the top row; let the
+     links drop below as a full-width panel when the menu is open. */
+  .header-nav {
+    flex-wrap: wrap;
+  }
+
+  .theme-toggle {
+    margin-left: auto;
+    order: 2;
+  }
+
+  .hamburger-btn {
+    order: 1;
+  }
+
   .nav-links {
     display: none;
     flex-direction: column;
     gap: 0;
     width: 100%;
     padding: 10px 0;
+    order: 3;
+    flex-basis: 100%;
   }
 
   body.nav-open .nav-links {
