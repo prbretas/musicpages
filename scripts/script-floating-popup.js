@@ -929,7 +929,7 @@ document.addEventListener('DOMContentLoaded', function () {
     title: 'Metrônomo Digital',
     contentSelector: '#metronomeContainer',
     menuItemSelector: '[data-popup="metronome"]',
-    size: { width: '380px', height: 'auto' },
+    size: { width: '440px', height: 'auto' },
     onClose: function () {
       // Check if the metronome is currently playing
       var startStopBtn = document.getElementById('startStopButton');

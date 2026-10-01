@@ -1149,7 +1149,71 @@ body.popup-open {
 .popup-body {
   padding: 16px;
   overflow-y: auto;
+  overflow-x: hidden;
   max-height: 70vh;
+}
+
+/* ---- Content moved into popups: neutralize the standalone "card" look ----
+   The source containers (#metronomeContainer / #scaleStructureSection) are
+   styled as cards for the page. Inside a popup, the popup itself is the card,
+   so we drop the duplicate frame, spacing and redundant title. */
+.popup-body .metronome-group,
+.popup-body #scaleStructureSection {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100%;
+}
+
+/* The popup header already shows the title — hide the inner heading. */
+.popup-body > .metronome-group > h2:first-child,
+.popup-body > #scaleStructureSection > h2:first-child {
+  display: none;
+}
+
+/* Keep the metronome controls comfortably inside the popup width. */
+.popup-body .metronome-controls {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.popup-body .metronome-presets {
+  gap: 12px;
+}
+
+.popup-body .preset-group {
+  justify-content: center;
+}
+
+/* ---- Custom scrollbar for popup bodies (light theme) ---- */
+.popup-body {
+  scrollbar-width: thin;                       /* Firefox */
+  scrollbar-color: #c1c7cd transparent;        /* Firefox: thumb / track */
+}
+
+.popup-body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.popup-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.popup-body::-webkit-scrollbar-thumb {
+  background-color: #c1c7cd;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.popup-body::-webkit-scrollbar-thumb:hover {
+  background-color: #a7adb4;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 /* Highlight row in scale structure table */
@@ -1197,6 +1261,19 @@ body.dark .popup-close-btn:hover {
 
 body.dark .popup-body {
   color: #e0e0e0;
+}
+
+/* Custom scrollbar for popup bodies (dark theme) */
+body.dark .popup-body {
+  scrollbar-color: #4a4a4a transparent;        /* Firefox: thumb / track */
+}
+
+body.dark .popup-body::-webkit-scrollbar-thumb {
+  background-color: #4a4a4a;
+}
+
+body.dark .popup-body::-webkit-scrollbar-thumb:hover {
+  background-color: #5e5e5e;
 }
 
 body.dark .highlight-row {
