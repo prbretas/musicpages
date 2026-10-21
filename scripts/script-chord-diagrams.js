@@ -645,8 +645,11 @@ var ChordVisualizer = (function () {
           openCircle.setAttribute('stroke-width', '1');
           svg.appendChild(openCircle);
         } else if (fretVal > 0) {
-          // Finger position — filled circle at correct fret with finger number
-          var cy = diagramTop + (fretVal - 0.5) * fretSpacing;
+          // Finger position — filled circle at correct fret with finger number.
+          // frets[] stores absolute fret numbers; convert to diagram-relative
+          // position by subtracting (startFret - 1) so fret startFret → row 1.
+          var relFret = fretVal - (shape.startFret - 1);
+          var cy = diagramTop + (relFret - 0.5) * fretSpacing;
           var fingerCircle = document.createElementNS(SVG_NS, 'circle');
           fingerCircle.setAttribute('cx', x);
           fingerCircle.setAttribute('cy', cy);
@@ -678,7 +681,9 @@ var ChordVisualizer = (function () {
 
         var barreX = diagramLeft + Math.min(barreFrom, barreTo) * stringSpacing;
         var barreWidth = Math.abs(barreTo - barreFrom) * stringSpacing;
-        var barreY = diagramTop + (barreFret - 0.5) * fretSpacing;
+        // Same absolute→relative conversion as for finger circles.
+        var barreRelFret = barreFret - (shape.startFret - 1);
+        var barreY = diagramTop + (barreRelFret - 0.5) * fretSpacing;
         var barreHeight = fretSpacing * 0.6;
 
         var barreRect = document.createElementNS(SVG_NS, 'rect');
