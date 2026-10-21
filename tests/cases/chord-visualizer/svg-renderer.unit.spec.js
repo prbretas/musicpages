@@ -143,4 +143,82 @@ describe('SVGRenderer.renderDiagram', () => {
     const fretLines = svg.querySelectorAll('.chord-fret');
     expect(fretLines.length).toBe(6); // 5 + 1
   });
+
+  it('finger circles use diagram-relative position when startFret > 1 (bug fix)', () => {
+    // Bm7b5 shape: frets [-1, 2, 3, 2, 3, -1], startFret: 2.
+    // fret value 2 with startFret 2 → relative fret = 1 → circle should be in
+    // the FIRST fret space of the diagram (cy close to diagramTop + 0.5 * fretSpacing).
+    // Before the fix, fretVal was used directly (rel=2), placing circles one row too low.
+    const bm7b5Shape = {
+      chordName: 'Bm7b5',
+      frets: [-1, 2, 3, 2, 3, -1],
+      fingers: [0, 1, 3, 2, 4, 0],
+      startFret: 2,
+      barre: null,
+      source: 'local'
+    };
+
+    const opts = { numStrings: 6, isDark: false, diagramWidth: 80, diagramHeight: 100, fretsToShow: 5 };
+    const svg = SVGRenderer.renderDiagram(bm7b5Shape, opts);
+
+    // Layout parameters (must match renderDiagram internals)
+    const diagramTop = 16;
+    const fretAreaHeight = 100 - 6 - diagramTop;  // 78
+    const fretSpacing = fretAreaHeight / 5;         // 15.6
+
+    // All finger circles — collect their cy values
+    const circles = svg.querySelectorAll('.chord-finger');
+    const cyValues = Array.from(circles).map(c => parseFloat(c.getAttribute('cy')));
+
+    // With the fix: fretVal=2, startFret=2 → relFret=1 → cy = 16 + 0.5*15.6 = 23.8
+    //              fretVal=3, startFret=2 → relFret=2 → cy = 16 + 1.5*15.6 = 39.4
+    // Before the fix: fretVal=2 → cy = 16 + 1.5*15.6 = 39.4  (one row too low)
+    const expectedCy1 = diagramTop + 0.5 * fretSpacing;  // relFret 1
+    const expectedCy2 = diagramTop + 1.5 * fretSpacing;  // relFret 2
+
+    const tolerance = 0.5;
+    const hasCy1 = cyValues.some(cy => Math.abs(cy - expectedCy1) < tolerance);
+    const hasCy2 = cyValues.some(cy => Math.abs(cy - expectedCy2) < tolerance);
+
+    expect(hasCy1).toBe(true);  // circles at relative fret 1
+    expect(hasCy2).toBe(true);  // circles at relative fret 2
+
+    // None of the circles should be at the OLD (incorrect) position for relFret 2
+    // (which was where relFret=1 circles ended up before the fix)
+    const oldBugPosition = diagramTop + 1.5 * fretSpacing; // what fretVal=2 produced before fix
+    // oldBugPosition equals expectedCy2, which is correct for fretVal=3.
+    // So verify there are NO circles at relFret 3 (oldBugPosition+fretSpacing)
+    const wrongPosition = diagramTop + 2.5 * fretSpacing;
+    const hasWrongPosition = cyValues.some(cy => Math.abs(cy - wrongPosition) < tolerance);
+    expect(hasWrongPosition).toBe(false);  // no circles at relFret 3 (no fret value of 4)
+  });
+
+  it('startFret:1 circles remain at same position (no regression)', () => {
+    // When startFret===1, (startFret-1)===0, so relFret===fretVal — behaviour unchanged.
+    const amShape = {
+      chordName: 'Am7',
+      frets: [-1, 0, 2, 0, 1, 0],
+      fingers: [0, 0, 2, 0, 1, 0],
+      startFret: 1,
+      barre: null,
+      source: 'local'
+    };
+    const opts = { numStrings: 6, isDark: false, diagramWidth: 80, diagramHeight: 100, fretsToShow: 5 };
+    const svg = SVGRenderer.renderDiagram(amShape, opts);
+
+    const diagramTop = 16;
+    const fretSpacing = (100 - 6 - diagramTop) / 5;
+
+    const circles = svg.querySelectorAll('.chord-finger');
+    const cyValues = Array.from(circles).map(c => parseFloat(c.getAttribute('cy')));
+
+    // fretVal=2, startFret=1 → relFret=2 → cy = diagramTop + 1.5 * fretSpacing
+    // fretVal=1, startFret=1 → relFret=1 → cy = diagramTop + 0.5 * fretSpacing
+    const expectedFret2 = diagramTop + 1.5 * fretSpacing;
+    const expectedFret1 = diagramTop + 0.5 * fretSpacing;
+    const tol = 0.5;
+
+    expect(cyValues.some(cy => Math.abs(cy - expectedFret2) < tol)).toBe(true);
+    expect(cyValues.some(cy => Math.abs(cy - expectedFret1) < tol)).toBe(true);
+  });
 });
