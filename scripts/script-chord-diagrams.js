@@ -1003,6 +1003,97 @@ var ChordVisualizer = (function () {
   }
 
   // ------------------------------------------------------------------
+  // UberchordClient — API client with in-memory cache and local fallback
+  // Requirements: 5.1, 5.2, 5.3, 5.4, 6.1, 6.4
+  // ------------------------------------------------------------------
+
+  var UberchordClient = (function () {
+    var _cache = {};
+    var API_BASE = 'https://api.uberchord.com/v1/chords/';
+    var TIMEOUT_MS = 5000;
+
+    /**
+     * Parses Uberchord API response into ChordShape[].
+     * Response format: [{ strings, fingering, chordName, ... }]
+     */
+    function _parseApiResponse(data, chordName) {
+      if (!Array.isArray(data) || data.length === 0) return [];
+      var shapes = [];
+      for (var i = 0; i < data.length; i++) {
+        var item = data[i];
+        if (!item.strings || !item.fingering) continue;
+        var frets = String(item.strings).split(',').map(function (v) {
+          var n = parseInt(v.trim(), 10);
+          return isNaN(n) ? -1 : n;
+        });
+        var fingers = String(item.fingering).split(',').map(function (v) {
+          var n = parseInt(v.trim(), 10);
+          return isNaN(n) ? 0 : n;
+        });
+        // Determine startFret: min non-zero, non-muted fret
+        var nonZero = frets.filter(function (f) { return f > 0; });
+        var startFret = nonZero.length > 0 ? Math.min.apply(null, nonZero) : 1;
+        shapes.push({
+          chordName: chordName,
+          frets: frets,
+          fingers: fingers,
+          startFret: startFret,
+          barre: null,
+          source: 'api'
+        });
+      }
+      return shapes;
+    }
+
+    /**
+     * Fetches chord shapes from Uberchord API with 5s timeout and in-memory cache.
+     * Falls back to LocalChordDB on any error.
+     *
+     * @param {string} chordName
+     * @returns {Promise<{ shapes: ChordShape[], source: 'api'|'local' }>}
+     */
+    function fetchChord(chordName) {
+      var normalized = normalizeChordName(chordName);
+      if (_cache[normalized]) {
+        return Promise.resolve(_cache[normalized]);
+      }
+
+      // Skip network when not in browser or fetch unavailable
+      if (typeof fetch === 'undefined') {
+        var local = { shapes: LocalChordDB.getChordShapes(chordName), source: 'local' };
+        return Promise.resolve(local);
+      }
+
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timeoutId = controller ? setTimeout(function () { controller.abort(); }, TIMEOUT_MS) : null;
+
+      var url = API_BASE + encodeURIComponent(chordName);
+      var fetchOpts = controller ? { signal: controller.signal } : {};
+
+      return fetch(url, fetchOpts)
+        .then(function (res) {
+          if (timeoutId) clearTimeout(timeoutId);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var shapes = _parseApiResponse(data, chordName);
+          if (shapes.length === 0) throw new Error('empty');
+          var result = { shapes: shapes, source: 'api' };
+          _cache[normalized] = result;
+          return result;
+        })
+        .catch(function () {
+          if (timeoutId) clearTimeout(timeoutId);
+          var fallback = { shapes: LocalChordDB.getChordShapes(chordName), source: 'local' };
+          return fallback;
+        });
+    }
+
+    return { fetchChord: fetchChord };
+  }());
+
+  // ------------------------------------------------------------------
   // Internal State
   // ------------------------------------------------------------------
 
@@ -1014,6 +1105,49 @@ var ChordVisualizer = (function () {
 
   /** @type {HTMLElement|null} Currently active chord card element */
   var _activeChordCard = null;
+
+  /** @type {number} Active instrument string count (default: 6-string guitar) */
+  var _numStrings = 6;
+
+  /** @type {string[]} Active instrument tuning (low→high), e.g. ['E','A','D','G','B','E'] */
+  var _tuning = ['E', 'A', 'D', 'G', 'B', 'E'];
+
+  /** @type {number[]} Active instrument octaves per string */
+  var _octaves = [2, 2, 3, 3, 3, 4];
+
+  // Chromatic note order for MIDI calculation
+  var NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  var NOTE_NAMES_FLAT = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+  /**
+   * Returns the chromatic index (0–11) for a note name, handling flats.
+   * @param {string} note
+   * @returns {number}
+   */
+  function _noteToChromatic(note) {
+    var idx = NOTE_NAMES.indexOf(note);
+    if (idx !== -1) return idx;
+    var flatIdx = NOTE_NAMES_FLAT.indexOf(note);
+    if (flatIdx !== -1) return flatIdx;
+    return 0;
+  }
+
+  /**
+   * Calculates MIDI note number for a string open note + fret.
+   * MIDI = (octave + 1) * 12 + chromaticIndex + fret, clamped to [0, 127]
+   *
+   * @param {string} openNote - Open string note name (e.g. "E")
+   * @param {number} octave   - Octave of the open string (e.g. 2)
+   * @param {number} fret     - Fret number (0 = open)
+   * @returns {number} MIDI note number
+   */
+  function _stringFretToMidi(openNote, octave, fret) {
+    var chromatic = _noteToChromatic(openNote);
+    var midi = (octave + 1) * 12 + chromatic + fret;
+    if (midi < 0) return 0;
+    if (midi > 127) return 127;
+    return midi;
+  }
 
   // ------------------------------------------------------------------
   // Public API
@@ -1036,7 +1170,10 @@ var ChordVisualizer = (function () {
       return;
     }
 
-    // Listen for scale-changed events to compute and render harmonic field
+    // --- Load initial instrument state from registry ---
+    _syncInstrumentState();
+
+    // --- Listen for scale-changed events: compute field + fetch shapes + render ---
     document.addEventListener('scale-changed', function (e) {
       var detail = e.detail;
       if (!detail || !detail.notes || !detail.tonica || !detail.tipoEscala) {
@@ -1053,15 +1190,44 @@ var ChordVisualizer = (function () {
         return;
       }
 
-      render(chords);
+      _renderWithShapes(chords);
     });
 
-    // If calcularEscala() already ran, read current state and render immediately
+    // --- Listen for instrument-changed events: re-render with new string count ---
+    // Requirements: 4.1, 4.2, 4.3, 4.4
+    document.addEventListener('instrument-changed', function (e) {
+      var detail = e.detail;
+      if (!detail) return;
+      if (detail.strings) _numStrings = detail.strings;
+      if (detail.tuning)  _tuning = detail.tuning.slice();
+      if (detail.octaves) _octaves = detail.octaves.slice();
+      if (lastHarmonicField.length > 0) {
+        _renderWithShapes(lastHarmonicField);
+      }
+    });
+
+    // --- Theme toggle wiring: update all SVGs when dark/light changes ---
+    // Requirements: 8.3
+    if (typeof MutationObserver !== 'undefined') {
+      var _themeObserver = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.attributeName === 'class') {
+            var isDark = document.body.classList.contains('dark');
+            var svgs = container ? container.querySelectorAll('.chord-svg') : [];
+            for (var i = 0; i < svgs.length; i++) {
+              SVGRenderer.updateTheme(svgs[i], isDark);
+            }
+          }
+        });
+      });
+      _themeObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    // --- Trigger initial render if scale was already computed ---
     var tonicaEl = document.getElementById('tonica');
     var tipoEscalaEl = document.getElementById('tipoEscala');
     var escalaResultEl = document.getElementById('escalaResultado');
     if (tonicaEl && tipoEscalaEl && escalaResultEl && escalaResultEl.innerText && escalaResultEl.innerText !== 'Aguardando cálculo...') {
-      // Trigger a fresh computation by firing calcularEscala
       if (typeof calcularEscala === 'function') {
         calcularEscala();
       }
@@ -1069,16 +1235,68 @@ var ChordVisualizer = (function () {
   }
 
   /**
+   * Syncs internal instrument state from InstrumentRegistry (default profile).
+   * Called on init and can be called again after instrument-changed.
+   */
+  function _syncInstrumentState() {
+    if (typeof InstrumentRegistry !== 'undefined') {
+      var profile = InstrumentRegistry.getById(InstrumentRegistry.getDefaultId());
+      if (profile) {
+        _numStrings = profile.strings;
+        _tuning = profile.tuning.slice();
+        _octaves = profile.octaves.slice();
+      }
+    }
+  }
+
+  /**
+   * Fetches shapes for all chords (via UberchordClient with local fallback)
+   * then renders. Shows offline indicator if any chord falls back to local data.
+   *
+   * @param {ChordInfo[]} chords
+   */
+  function _renderWithShapes(chords) {
+    // Fetch all shapes in parallel, falling back to local
+    var promises = chords.map(function (chord) {
+      return UberchordClient.fetchChord(chord.name).then(function (result) {
+        return { chord: chord, shapes: result.shapes, source: result.source };
+      });
+    });
+
+    Promise.all(promises).then(function (results) {
+      var hasOffline = results.some(function (r) { return r.source === 'local'; });
+      render(chords, results, hasOffline);
+    }).catch(function () {
+      // Absolute fallback: render with local only
+      var localResults = chords.map(function (chord) {
+        return { chord: chord, shapes: LocalChordDB.getChordShapes(chord.name), source: 'local' };
+      });
+      render(chords, localResults, true);
+    });
+  }
+
+  /**
    * Renders chord diagrams for the given list of chords.
+   * Accepts pre-fetched shape results to avoid redundant API calls.
    *
    * @param {ChordInfo[]} chords - Array of chord info objects to render
+   * @param {Array} [shapesResults] - Pre-fetched [{chord, shapes, source}] from _renderWithShapes
+   * @param {boolean} [hasOffline] - Whether any chord is using local fallback data
    *
-   * Requirements: 1.1, 1.3, 9.4
+   * Requirements: 1.1, 1.3, 6.3, 9.4
    */
-  function render(chords) {
+  function render(chords, shapesResults, hasOffline) {
     if (!container) {
       console.warn('[ChordVisualizer] Cannot render — not initialized.');
       return;
+    }
+
+    // Build a map chordName → shapes from results (if provided)
+    var shapesMap = {};
+    if (shapesResults && Array.isArray(shapesResults)) {
+      for (var r = 0; r < shapesResults.length; r++) {
+        shapesMap[shapesResults[r].chord.name] = shapesResults[r].shapes;
+      }
     }
 
     // Clear previous content (keep the h2 title if present)
@@ -1086,6 +1304,15 @@ var ChordVisualizer = (function () {
     container.innerHTML = '';
     if (title) {
       container.appendChild(title);
+    }
+
+    // Offline indicator (Requirement 6.3)
+    if (hasOffline) {
+      var offlineIndicator = document.createElement('p');
+      offlineIndicator.className = 'chord-visualizer-offline';
+      offlineIndicator.textContent = 'offline';
+      offlineIndicator.setAttribute('aria-label', 'Dados de acordes carregados localmente (sem conexão com API)');
+      container.appendChild(offlineIndicator);
     }
 
     // Check dark mode
@@ -1097,7 +1324,9 @@ var ChordVisualizer = (function () {
 
     for (var i = 0; i < chords.length; i++) {
       var chord = chords[i];
-      var shapes = LocalChordDB.getChordShapes(chord.name);
+      var shapes = shapesMap[chord.name] !== undefined
+        ? shapesMap[chord.name]
+        : LocalChordDB.getChordShapes(chord.name);
 
       // Create card element
       var card = document.createElement('div');
@@ -1119,7 +1348,7 @@ var ChordVisualizer = (function () {
       } else {
         // Render first voicing SVG
         var shape = shapes[0];
-        var svg = SVGRenderer.renderDiagram(shape, { numStrings: 6, isDark: isDark });
+        var svg = SVGRenderer.renderDiagram(shape, { numStrings: _numStrings, isDark: isDark });
         var svgWrapper = document.createElement('div');
         svgWrapper.className = 'chord-svg-wrapper';
         svgWrapper.appendChild(svg);
@@ -1151,7 +1380,7 @@ var ChordVisualizer = (function () {
               e.stopPropagation();
               navState.prev();
               svgWrapperEl.innerHTML = '';
-              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: 6, isDark: document.body.classList.contains('dark') });
+              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: _numStrings, isDark: document.body.classList.contains('dark') });
               svgWrapperEl.appendChild(newSvg);
               indicatorEl.textContent = navState.getIndicator();
             });
@@ -1159,7 +1388,7 @@ var ChordVisualizer = (function () {
               e.stopPropagation();
               navState.next();
               svgWrapperEl.innerHTML = '';
-              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: 6, isDark: document.body.classList.contains('dark') });
+              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: _numStrings, isDark: document.body.classList.contains('dark') });
               svgWrapperEl.appendChild(newSvg);
               indicatorEl.textContent = navState.getIndicator();
             });
@@ -1196,13 +1425,46 @@ var ChordVisualizer = (function () {
 
   /**
    * Plays the audio for a given chord shape via AudioEngine.
+   * Calculates MIDI notes from the active instrument tuning + fret positions.
+   * Strums low-to-high with 30ms delay between strings.
    *
    * @param {ChordShape} chordShape - The chord shape to play
    *
-   * Requirements: 7.1, 9.4
+   * Requirements: 7.1, 7.2, 7.3, 7.4
    */
   function playChord(chordShape) {
-    // Implementation will be added in subsequent tasks
+    if (typeof AudioEngine === 'undefined' || !AudioEngine.isSupported()) {
+      return;
+    }
+
+    var frets = chordShape.frets || [];
+    var startFret = chordShape.startFret || 1;
+    var STRUM_DELAY_MS = 30;
+    var noteIndex = 0;
+
+    // Iterate strings low-to-high (index 0 = lowest string)
+    for (var s = 0; s < frets.length; s++) {
+      var fretVal = frets[s];
+      if (fretVal === -1) continue; // muted string — skip
+
+      // Absolute fret: fretVal=0 → open; fretVal>0 → startFret-relative
+      var absoluteFret = fretVal === 0 ? 0 : (startFret - 1) + fretVal;
+
+      // Get open string note + octave from active instrument state
+      var stringIndex = s;
+      var openNote = (_tuning && _tuning[stringIndex]) ? _tuning[stringIndex] : 'E';
+      var octave = (_octaves && _octaves[stringIndex] != null) ? _octaves[stringIndex] : 2;
+
+      var midi = _stringFretToMidi(openNote, octave, absoluteFret);
+
+      (function (midiNote, delayMs) {
+        setTimeout(function () {
+          AudioEngine.playNote(midiNote, undefined, { attack: 0.005, decay: 0.1, sustain: 0.6, release: 0.4 });
+        }, delayMs);
+      })(midi, noteIndex * STRUM_DELAY_MS);
+
+      noteIndex++;
+    }
   }
 
   /**
@@ -1287,10 +1549,16 @@ var ChordVisualizer = (function () {
     computeHarmonicField: computeHarmonicField,
     getCampoHarmonico: getCampoHarmonico,
     LocalChordDB: LocalChordDB,
+    UberchordClient: UberchordClient,
     SVGRenderer: SVGRenderer,
     // Expose internal state for testability
     getActiveChordCard: function () { return _activeChordCard; },
-    setActiveChordCard: function (el) { _activeChordCard = el; }
+    setActiveChordCard: function (el) { _activeChordCard = el; },
+    getNumStrings: function () { return _numStrings; },
+    getTuning: function () { return _tuning.slice(); },
+    // Expose MIDI helper for testability (Property 13)
+    _stringFretToMidi: _stringFretToMidi,
+    _noteToChromatic: _noteToChromatic
   };
 
   return api;

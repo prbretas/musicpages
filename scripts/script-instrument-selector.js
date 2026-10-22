@@ -74,7 +74,7 @@ var InstrumentSelector = (function () {
     select.addEventListener('change', function () {
       var selectedId = select.value;
 
-      // Apply the new instrument profile
+      // Apply the new instrument profile to fretboard
       if (typeof applyInstrumentProfile === 'function') {
         applyInstrumentProfile(selectedId);
       }
@@ -88,6 +88,24 @@ var InstrumentSelector = (function () {
         if (profile) {
           initializeCustomTuningPanel(profile);
         }
+      }
+
+      // Dispatch instrument-changed event so ChordVisualizer (and others) can adapt
+      // Requirements: 4.1, 4.2 (chord-visualizer spec)
+      var changedProfile = null;
+      if (typeof InstrumentRegistry !== 'undefined' && InstrumentRegistry.getById) {
+        changedProfile = InstrumentRegistry.getById(selectedId);
+      }
+      if (changedProfile) {
+        document.dispatchEvent(new CustomEvent('instrument-changed', {
+          detail: {
+            profileId: changedProfile.id,
+            strings:   changedProfile.strings,
+            tuning:    changedProfile.tuning.slice(),
+            octaves:   changedProfile.octaves.slice(),
+            frets:     changedProfile.frets
+          }
+        }));
       }
     });
 
