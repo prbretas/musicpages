@@ -35,14 +35,14 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 
 | Issue | Ideia | Tema | Prio | Urgência | Esforço | Risco | Status |
 |-------|-------|------|------|----------|---------|-------|--------|
-| L-001 | Hero Section da Escala + remover Transpositor | UI/UX | P2 | média | M | baixo | `🟠 in progress` |
+| F-001 | Menu dropdown por tema | UI/navegação | P2 | baixa | M | médio | `🟠 in progress` |
+| L-001 | Hero Section da Escala | UI/UX | P2 | média | M | baixo | `🟢 done` PR #18-20 |
+| K-001 | Card de Acorde Interativo | UI/Feature | P2 | média | M | médio | `🟢 done` PR #17 |
+| CSS-001 | Chord Shape Selector | Feature | P2 | média | M | médio | `🟢 done` PR #16 |
 | CV-001 | Chord Visualizer / Campo Harmônico | Dados/UI | **P1** | **alta** | L | médio | `🟢 done` PR #11 |
 | CFV-001 | Chord Fretboard Visualization | UI/interação | **P1** | **alta** | M | médio | `🟢 done` PR #12 |
 | C-001 | Responsividade mobile do Fretboard | UI/responsivo | P2 | média | M | médio | `🟢 done` PR #13 |
 | SS-001 | Scale Shapes CAGED | UI/fretboard | P2 | média | M | médio | `🟢 done` PR #14 |
-| CSS-001 | Chord Shape Selector | Feature | P2 | média | M | médio | `🟡 spec` 0/19 |
-| K-001 | Card de Acorde Interativo | UI/Feature | P2 | média | M | médio | `🟡 spec` 0/29 |
-| F-001 | Menu dropdown por tema | UI/navegação | P2 | baixa | M | médio | `🔵 backlog` |
 | J-001 | Toggle modo completo do Metrônomo | Feature | P3 | baixa | M/L | médio | `🔵 backlog` |
 | A-001 | Afinador (Web Audio API) | Feature nova | P2 | baixa | L | baixo | `🔵 backlog` |
 | D-001 | Gerador de backing tracks | Feature nova | P3 | baixa | L | baixo | `🔵 backlog` |

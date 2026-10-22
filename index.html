@@ -62,17 +62,54 @@
 
     <nav id="appSidebar" class="app-sidebar" aria-label="Navegação principal">
         <button class="sidebar-close" type="button" aria-label="Fechar menu">&times;</button>
+
         <ul class="sidebar-links">
-            <li><a href="#metronomeContainer" data-popup="metronome">Metrônomo</a></li>
-            <li><a href="#scaleCalcSection">Calculadora de Escalas</a></li>
-            <li><a href="#" data-popup="scale-structure">Estruturas de Escalas</a></li>
-            <li><a href="#tecladoVirtualContainer">Teclado Virtual</a></li>
-            <li><a href="#fretboardContainer">Braço do Instrumento</a></li>
-            <li><a href="#chordVisualizerContainer">Acordes</a></li>
-            <li><a href="#scaleCircleContainer">Círculo de Escalas</a></li>
-            <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
-            <li><a href="#songsterrContainer">Songsterr</a></li>
-            <li><a href="#cifraClubContainer">CifraClub</a></li>
+
+            <!-- Grupo: Prática -->
+            <li class="sidebar-group">
+                <details>
+                    <summary class="sidebar-group__title">🎵 Prática</summary>
+                    <ul class="sidebar-group__links">
+                        <li><a href="#metronomeContainer" data-popup="metronome">Metrônomo</a></li>
+                    </ul>
+                </details>
+            </li>
+
+            <!-- Grupo: Teoria -->
+            <li class="sidebar-group">
+                <details open>
+                    <summary class="sidebar-group__title">📐 Teoria</summary>
+                    <ul class="sidebar-group__links">
+                        <li><a href="#scaleCalcSection">Calculadora de Escalas</a></li>
+                        <li><a href="#" data-popup="scale-structure">Estruturas de Escalas</a></li>
+                        <li><a href="#scaleCircleContainer">Círculo de Escalas</a></li>
+                        <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
+                    </ul>
+                </details>
+            </li>
+
+            <!-- Grupo: Instrumento -->
+            <li class="sidebar-group">
+                <details open>
+                    <summary class="sidebar-group__title">🎸 Instrumento</summary>
+                    <ul class="sidebar-group__links">
+                        <li><a href="#fretboardContainer">Braço do Instrumento</a></li>
+                        <li><a href="#chordVisualizerContainer">Acordes</a></li>
+                        <li><a href="#tecladoVirtualContainer">Teclado Virtual</a></li>
+                    </ul>
+                </details>
+            </li>
+
+            <!-- Grupo: Recursos -->
+            <li class="sidebar-group">
+                <details>
+                    <summary class="sidebar-group__title">🔗 Recursos</summary>
+                    <ul class="sidebar-group__links">
+                        <li><a href="#songsterrContainer">Songsterr</a></li>
+                    </ul>
+                </details>
+            </li>
+
         </ul>
     </nav>
     <div class="container">

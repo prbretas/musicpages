@@ -598,6 +598,96 @@ body.sidebar-open .app-sidebar {
   outline-offset: -2px;
 }
 
+/* ============================= Sidebar Groups (F-001) ============================= */
+
+/* Remove bullet do <li> que contém o <details> */
+.sidebar-group {
+  list-style: none;
+}
+
+/* Título do grupo (summary) */
+.sidebar-group__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6c757d;
+  cursor: pointer;
+  user-select: none;
+  list-style: none; /* remove seta padrão do Firefox */
+}
+
+/* Remove seta padrão do Chrome/Safari */
+.sidebar-group__title::-webkit-details-marker { display: none; }
+
+.sidebar-group__title::after {
+  content: '▾';
+  margin-left: auto;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+}
+
+details[open] .sidebar-group__title::after {
+  transform: rotate(-180deg);
+}
+
+.sidebar-group__title:hover {
+  color: #495057;
+  background-color: rgba(0,0,0,0.03);
+}
+
+/* Links dentro do grupo */
+.sidebar-group__links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 4px;
+}
+
+.sidebar-group__links li a {
+  display: flex;
+  align-items: center;
+  padding: 9px 20px 9px 28px; /* indentado em relação ao título */
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+  border-radius: 0;
+}
+
+.sidebar-group__links li a:hover {
+  background-color: #e9ecef;
+  color: #007bff;
+}
+
+.sidebar-group__links li a:focus-visible {
+  outline: 2px solid #4a9eff;
+  outline-offset: -2px;
+}
+
+/* Dark mode — grupos */
+body.dark .sidebar-group__title {
+  color: #888;
+}
+
+body.dark .sidebar-group__title:hover {
+  color: #ccc;
+  background-color: rgba(255,255,255,0.04);
+}
+
+body.dark .sidebar-group__links li a {
+  color: #e0e0e0;
+}
+
+body.dark .sidebar-group__links li a:hover {
+  background-color: #2d2d2d;
+  color: #6bb3ff;
+}
+
 /* Overlay / scrim behind the sidebar */
 .sidebar-overlay {
   position: fixed;
