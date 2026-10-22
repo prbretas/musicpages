@@ -35,10 +35,10 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 
 | Issue | Ideia | Tema | Prio | Urgência | Esforço | Risco | Status |
 |-------|-------|------|------|----------|---------|-------|--------|
-| CV-001 | Chord Visualizer / Campo Harmônico | Dados/UI | **P1** | **alta** | L | médio | `🟠 in progress` 8/43 |
-| CFV-001 | Chord Fretboard Visualization | UI/interação | **P1** | **alta** | M | médio | `🟠 in progress` 17/26 |
-| C-001 | Responsividade mobile do Fretboard | UI/responsivo | P2 | média | M | médio | `🟠 in progress` 2/15 |
-| SS-001 | Scale Shapes CAGED | UI/fretboard | P2 | média | M | médio | `🟠 in progress` 14/29 |
+| CV-001 | Chord Visualizer / Campo Harmônico | Dados/UI | **P1** | **alta** | L | médio | `🟢 done` PR #11 |
+| CFV-001 | Chord Fretboard Visualization | UI/interação | **P1** | **alta** | M | médio | `🟢 done` PR #12 |
+| C-001 | Responsividade mobile do Fretboard | UI/responsivo | P2 | média | M | médio | `🟢 done` PR #13 |
+| SS-001 | Scale Shapes CAGED | UI/fretboard | P2 | média | M | médio | `🟢 done` PR #14 |
 | CSS-001 | Chord Shape Selector | Feature | P2 | média | M | médio | `🟡 spec` 0/19 |
 | K-001 | Card de Acorde Interativo | UI/Feature | P2 | média | M | médio | `🟡 spec` 0/29 |
 | F-001 | Menu dropdown por tema | UI/navegação | P2 | baixa | M | médio | `🔵 backlog` |
@@ -53,15 +53,11 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 
 ### Ordem de execução recomendada
 
-1. **CV-001** — base do campo harmônico; desbloqueará CFV-001, CSS-001 e K-001.
-2. **CFV-001** — visualização de acorde no fretboard; 17/26 concluídas, perto do fim.
-3. **C-001** — melhora percebida direta no mobile; depende de testes visuais em breakpoints.
-4. **SS-001** — shapes CAGED no fretboard; 14/29 concluídas, em andamento.
-5. **CSS-001** — persistência de voicings; depende de CV-001 + CFV-001.
-6. **K-001** — popup interativo de acorde; depende de CV-001, CFV-001 e CSS-001.
-7. **F-001** — dropdown de navegação; fazer após A/B/D definirem os itens de menu.
-8. **A-001 / D-001 / B-001** — features novas de grande esforço; cada uma exige spec antes.
-9. **J-001** — mapear repo `prbretas/metronome` antes de criar spec.
+1. **CSS-001** — persiste voicings; spec pronta, pode iniciar agora.
+2. **K-001** — popup interativo de acorde; depende de CSS-001 estar funcional.
+3. **F-001** — dropdown de navegação; fazer após A/B/D definirem os itens de menu.
+4. **A-001 / D-001 / B-001** — features novas de grande esforço; cada uma exige spec antes.
+5. **J-001** — mapear repo `prbretas/metronome` antes de criar spec.
 
 ---
 
@@ -70,10 +66,7 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 > Detalhes completos em `docs/issues.md`.
 
 ### 🟠 Em desenvolvimento
-- **CV-001** — Chord Visualizer / Campo Harmônico · spec: `.kiro/specs/chord-visualizer/`
-- **CFV-001** — Chord Fretboard Visualization · spec: `.kiro/specs/chord-fretboard-visualization/`
-- **C-001** — Responsividade mobile do Fretboard · spec: `.kiro/specs/fretboard-mobile-responsive/`
-- **SS-001** — Scale Shapes CAGED · spec: `.kiro/specs/scale-shapes-caged/`
+*(nenhuma no momento)*
 
 ### 🟡 Spec pronta (aguardando implementação)
 - **CSS-001** — Chord Shape Selector · spec: `.kiro/specs/chord-shape-selector/`
