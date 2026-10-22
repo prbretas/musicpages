@@ -17,6 +17,34 @@ Tracker de issues e features do projeto. Issues ficam aqui, não no GitHub.
 
 ## Abertas
 
+### L-001 · `🟠 in progress` · feat: Hero Section dinâmica da escala + remover Transpositor da página
+
+**Prioridade:** P2 · **Urgência:** média · **Esforço:** M · **Risco:** baixo
+**Spec:** não requerida (sem spec — implementação direta)
+
+#### Contexto
+
+A página abre hoje com o "Transpositor de Escalas Musicais" como destaque visual (h1 + selects +
+botão). A ideia é substituir esse bloco por uma **hero section dinâmica** que exibe a tonalidade
+e escala ativas de forma visual e informativa. Os seletores migram para a topbar (já implementada
+em SN-001) e o bloco antigo some da seção principal.
+
+#### Comportamento esperado
+
+- **Hero section** abaixo da topbar: exibe a tônica em destaque (letra grande), nome da escala,
+  sonoridade, sentimentos despertados, uso comum e exemplos de músicas famosas.
+- Atualiza automaticamente ao trocar tônica/escala na topbar (evento `scale-changed`).
+- Layout em duas colunas: texto à esquerda, Círculo de Escalas à direita (como na referência).
+- O `#scaleCalcSection` (Transpositor) é ocultado da view principal — os selects originais
+  (`#tonica`, `#tipoEscala`) permanecem no DOM (usados pela sidebar sync) mas a seção inteira
+  fica `display: none` ou é movida para popup/seção colapsável acessível pelo menu.
+
+#### Referência visual
+
+`img/IMG DEVELOPMENT/` — screenshots do layout desejado (hero C Maior + topbar com selects).
+
+---
+
 ### CSS-001 · `🟡 spec` · feat: Chord Shape Selector
 
 **Prioridade:** P2 · **Urgência:** média · **Esforço:** M · **Risco:** médio

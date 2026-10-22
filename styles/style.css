@@ -619,7 +619,7 @@ body.popup-open {
 }
 
 /* ============================= Songsterr Container ============================= */
-#songsterrContainer {
+#songsterrContainer, #cifraClubContainer {
   background-color: #ffffff;
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -1377,6 +1377,24 @@ body.dark #songsterrContainer {
   border-color: #3a3a3a;
   color: #e0e0e0;
 }
+
+body.dark #cifraClubContainer {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+
+}
+
+#cifraClubIframe{
+
+}
+
+body.dark #cifraClubIframe {
+width: 75vw;
+height: 90vh;
+
+}
+
 body.dark .songsterr-description {
   color: #b0b0b0;
 }
@@ -1749,5 +1767,133 @@ body.dark .sidebar-links a.active {
 
   .popup-body {
     max-height: calc(80vh - 48px);
+  }
+}
+
+/* ============================= Scale Hero Section (L-001) ============================= */
+
+/* Oculta o bloco legado do Transpositor (mantém selects no DOM para sincronização) */
+.scale-calc-section--hidden {
+  display: none;
+}
+
+/* Container principal do hero */
+.scale-hero {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  padding: 36px 32px 28px;
+  margin-bottom: 12px;
+  background: #1a1a2e;
+  border-radius: 14px;
+  color: #fff;
+  min-height: 240px;
+}
+
+.scale-hero__text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Headline: letra grande + nome da escala */
+.scale-hero__headline {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.scale-hero__tonica {
+  font-family: 'Archivo Black', 'Arial Black', sans-serif;
+  font-size: clamp(64px, 10vw, 110px);
+  line-height: 1;
+  color: #fff;
+  letter-spacing: -2px;
+}
+
+.scale-hero__scale-name {
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: 600;
+  color: #e0e0e0;
+  line-height: 1.2;
+}
+
+/* Lista de propriedades */
+.scale-hero__props {
+  list-style: disc;
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.scale-hero__props li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #d0d0d0;
+}
+
+.scale-hero__props strong {
+  color: #fff;
+}
+
+/* Exemplos de músicas */
+.scale-hero__examples {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.scale-hero__examples li {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e0e0;
+  padding: 2px 0;
+}
+
+.scale-hero__examples li::before {
+  content: '"';
+  color: #aaa;
+}
+
+.scale-hero__examples li::after {
+  content: '"';
+  color: #aaa;
+}
+
+/* Coluna direita — placeholder do círculo */
+.scale-hero__circle {
+  flex: 0 0 260px;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* Light mode — hero com fundo mais claro */
+body:not(.dark) .scale-hero {
+  background: #f0f4ff;
+  color: #111;
+}
+
+body:not(.dark) .scale-hero__tonica { color: #111; }
+body:not(.dark) .scale-hero__scale-name { color: #333; }
+body:not(.dark) .scale-hero__props li { color: #444; }
+body:not(.dark) .scale-hero__props strong { color: #111; }
+body:not(.dark) .scale-hero__examples li { color: #222; }
+
+/* Responsive mobile */
+@media (max-width: 600px) {
+  .scale-hero {
+    flex-direction: column;
+    padding: 24px 18px 20px;
+    gap: 20px;
+  }
+
+  .scale-hero__circle {
+    flex: none;
+    width: 100%;
+    min-height: 180px;
   }
 }
