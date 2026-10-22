@@ -1094,6 +1094,352 @@ var ChordVisualizer = (function () {
   }());
 
   // ------------------------------------------------------------------
+  // ChordPopupManager — Singleton que gerencia o popup flutuante de acorde
+  // Requirements (K-001): 1.x, 2.x, 3.x, 5.x, 6.x, 7.x, 8.x
+  // ------------------------------------------------------------------
+
+  /**
+   * Cria o elemento DOM do ChordPopup e retorna API de controle.
+   *
+   * @param {Object} chord - { name, root, shapes[] }
+   * @param {number} activeShapeIndex - Índice do shape ativo
+   * @param {Object} opts - { pinned, onClose, onShapeSelect, onPlay }
+   * @returns {{ el: HTMLElement, upgrade: Function, destroy: Function, updateShape: Function }}
+   */
+  function createChordPopup(chord, activeShapeIndex, opts) {
+    opts = opts || {};
+    var isDark = document.body.classList.contains('dark');
+
+    var el = document.createElement('div');
+    el.className = 'chord-popup chord-popup--transient';
+    el.setAttribute('tabindex', '-1');
+    el.style.position = 'fixed';
+    el.style.zIndex = '1500';
+
+    // Handle de arraste
+    var handle = document.createElement('div');
+    handle.className = 'chord-popup__handle';
+    handle.setAttribute('aria-hidden', 'true');
+    handle.innerHTML = '&#8942;';
+    el.appendChild(handle);
+
+    // Diagrama SVG
+    var diagramDiv = document.createElement('div');
+    diagramDiv.className = 'chord-popup__diagram';
+    var currentShape = chord.shapes[activeShapeIndex] || chord.shapes[0];
+    diagramDiv.appendChild(
+      SVGRenderer.renderDiagram(currentShape, { numStrings: _numStrings, isDark: isDark })
+    );
+    el.appendChild(diagramDiv);
+
+    // --- Drag com computeDragPosition + clampPosition do FloatingPopup ---
+    var _dragging = false;
+    var _startPointer = { x: 0, y: 0 };
+    var _startPos = { x: 0, y: 0 };
+    var internals = (typeof window !== 'undefined' && window._FloatingPopupInternals) || null;
+
+    function _applyDrag(e) {
+      if (!_dragging) return;
+      var newPos;
+      if (internals && internals.computeDragPosition) {
+        newPos = internals.computeDragPosition(_startPos, _startPointer, { x: e.clientX, y: e.clientY });
+      } else {
+        newPos = { x: _startPos.x + (e.clientX - _startPointer.x), y: _startPos.y + (e.clientY - _startPointer.y) };
+      }
+      if (internals && internals.clampPosition) {
+        newPos = internals.clampPosition(newPos, { width: el.offsetWidth || 160, height: el.offsetHeight || 220 },
+          { width: window.innerWidth, height: window.innerHeight }, 40);
+      }
+      el.style.left = newPos.x + 'px';
+      el.style.top  = newPos.y + 'px';
+    }
+
+    function _initDrag(handleEl) {
+      handleEl.addEventListener('pointerdown', function (e) {
+        if (e.target.tagName === 'BUTTON') return;
+        _dragging = true;
+        _startPointer = { x: e.clientX, y: e.clientY };
+        _startPos = { x: parseFloat(el.style.left) || 0, y: parseFloat(el.style.top) || 0 };
+        handleEl.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      });
+      handleEl.addEventListener('pointermove', _applyDrag);
+      handleEl.addEventListener('pointerup', function () { _dragging = false; });
+      handleEl.addEventListener('pointercancel', function () { _dragging = false; });
+    }
+    _initDrag(handle);
+
+    /**
+     * Atualiza o diagrama SVG para um novo shape.
+     */
+    function updateShape(shapeIndex) {
+      var shape = chord.shapes[shapeIndex];
+      if (!shape) return;
+      diagramDiv.innerHTML = '';
+      diagramDiv.appendChild(
+        SVGRenderer.renderDiagram(shape, { numStrings: _numStrings, isDark: document.body.classList.contains('dark') })
+      );
+    }
+
+    /**
+     * Faz upgrade do popup transient → pinned.
+     */
+    function upgrade(pinnedOpts) {
+      pinnedOpts = pinnedOpts || {};
+      el.className = 'chord-popup chord-popup--pinned';
+      el.setAttribute('role', 'dialog');
+      el.setAttribute('aria-label', 'Acorde ' + chord.name);
+      el.setAttribute('aria-modal', 'false');
+
+      // Substituir handle simples por header completo
+      el.removeChild(handle);
+      var header = document.createElement('div');
+      header.className = 'chord-popup__header';
+
+      var newHandle = document.createElement('div');
+      newHandle.className = 'chord-popup__handle';
+      newHandle.setAttribute('aria-hidden', 'true');
+      newHandle.innerHTML = '&#8942;';
+      _initDrag(newHandle);
+      header.appendChild(newHandle);
+
+      var titleSpan = document.createElement('span');
+      titleSpan.className = 'chord-popup__title';
+      titleSpan.textContent = chord.name;
+      header.appendChild(titleSpan);
+
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'chord-popup__close';
+      closeBtn.setAttribute('aria-label', 'Fechar popup do acorde');
+      closeBtn.textContent = '\u00D7';
+      closeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (typeof pinnedOpts.onClose === 'function') pinnedOpts.onClose();
+      });
+      header.appendChild(closeBtn);
+      el.insertBefore(header, diagramDiv);
+
+      // Bloco de ações
+      var actionsDiv = document.createElement('div');
+      actionsDiv.className = 'chord-popup__actions';
+
+      // Botão ▶ Play
+      var playBtn = document.createElement('button');
+      playBtn.className = 'chord-popup__play';
+      playBtn.setAttribute('aria-label', 'Tocar acorde');
+      playBtn.textContent = '\u25B6 Play';
+      var audioAvailable = (typeof AudioEngine !== 'undefined' && AudioEngine.isSupported());
+      if (!audioAvailable) {
+        playBtn.disabled = true;
+        playBtn.style.opacity = '0.4';
+      } else {
+        playBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var shapeIdx = ChordPopupManager._state ? ChordPopupManager._state.activeShapeIndex : 0;
+          playChord(chord.shapes[shapeIdx] || chord.shapes[0]);
+        });
+      }
+      actionsDiv.appendChild(playBtn);
+
+      // Botão Variar
+      var variarBtn = document.createElement('button');
+      variarBtn.className = 'chord-popup__variar';
+      variarBtn.setAttribute('aria-label', 'Variar posicao do acorde');
+      variarBtn.textContent = 'Variar';
+      var carouselDiv = document.createElement('div');
+      carouselDiv.className = 'chord-popup__carousel';
+      carouselDiv.hidden = true;
+
+      if (chord.shapes.length <= 1) {
+        variarBtn.disabled = true;
+        variarBtn.style.opacity = '0.4';
+      } else {
+        variarBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          carouselDiv.hidden = !carouselDiv.hidden;
+        });
+
+        var currentIdx = (ChordPopupManager._state && ChordPopupManager._state.activeShapeIndex) || 0;
+        var carouselItems = [];
+        for (var ci = 0; ci < chord.shapes.length; ci++) {
+          (function (idx) {
+            var item = document.createElement('div');
+            item.className = 'carousel__item' + (idx === currentIdx ? ' carousel__item--active' : '');
+            item.setAttribute('aria-label', 'Shape ' + (idx + 1) + ' de ' + chord.shapes.length);
+            item.setAttribute('tabindex', '0');
+            item.appendChild(SVGRenderer.renderDiagram(chord.shapes[idx], {
+              numStrings: _numStrings, isDark: document.body.classList.contains('dark'),
+              diagramWidth: 60, diagramHeight: 75
+            }));
+
+            function selectItem() {
+              for (var j = 0; j < carouselItems.length; j++) carouselItems[j].classList.remove('carousel__item--active');
+              item.classList.add('carousel__item--active');
+              if (ChordPopupManager._state) ChordPopupManager._state.activeShapeIndex = idx;
+              updateShape(idx);
+              document.dispatchEvent(new CustomEvent('chord-shape-changed', {
+                detail: { chordName: chord.name, shapeIndex: idx }
+              }));
+              if (typeof pinnedOpts.onShapeSelect === 'function') pinnedOpts.onShapeSelect(idx);
+            }
+
+            item.addEventListener('click', function (e) { e.stopPropagation(); selectItem(); });
+            item.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectItem(); }
+            });
+            carouselItems.push(item);
+            carouselDiv.appendChild(item);
+          })(ci);
+        }
+      }
+      actionsDiv.appendChild(variarBtn);
+      el.appendChild(actionsDiv);
+      el.appendChild(carouselDiv);
+    }
+
+    function destroy() {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    return { el: el, upgrade: upgrade, destroy: destroy, updateShape: updateShape };
+  }
+
+  /**
+   * Calcula a posição inicial do popup adjacente ao card (preferência: abaixo-direita).
+   */
+  function _computePopupPosition(cardEl, popupWidth, popupHeight) {
+    popupWidth = popupWidth || 160;
+    popupHeight = popupHeight || 220;
+    var rect = cardEl.getBoundingClientRect();
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var x = rect.right + 4;
+    var y = rect.top;
+    if (x + popupWidth > vw) x = rect.left - popupWidth - 4;
+    if (x < 0) x = 4;
+    if (y + popupHeight > vh) y = Math.max(4, vh - popupHeight - 4);
+    if (y < 0) y = 4;
+    return { x: x, y: y };
+  }
+
+  var ChordPopupManager = {
+    _activePopup: null,
+    _activeCard:  null,
+    _pinned: false,
+    _hoverTimer: null,
+    _closeTimer: null,
+    _state: null,
+    _focusTrap: null,
+    _outsideClickHandler: null,
+
+    open: function (cardEl, chord, pinned) {
+      if (this._activeCard === cardEl && this._activePopup) {
+        if (pinned && !this._pinned) this.pin();
+        return;
+      }
+      if (this._activePopup) this._destroyPopup();
+
+      this._state = { chord: chord, activeShapeIndex: 0 };
+      var popup = createChordPopup(chord, 0, {});
+      this._activePopup = popup;
+      this._activeCard  = cardEl;
+      this._pinned = false;
+      document.body.appendChild(popup.el);
+
+      var pos = _computePopupPosition(cardEl);
+      popup.el.style.left = pos.x + 'px';
+      popup.el.style.top  = pos.y + 'px';
+
+      var self = this;
+      popup.el.addEventListener('mouseenter', function () { self.cancelCloseTimer(); });
+      popup.el.addEventListener('mouseleave', function () {
+        if (!self._pinned) {
+          self._closeTimer = setTimeout(function () { self.close(); }, 150);
+        }
+      });
+
+      if (pinned) this.pin();
+    },
+
+    pin: function () {
+      if (!this._activePopup || this._pinned) return;
+      this._pinned = true;
+      var self = this;
+
+      this._activePopup.upgrade({
+        onClose: function () { self.close(); },
+        onShapeSelect: function (idx) { if (self._state) self._state.activeShapeIndex = idx; }
+      });
+
+      if (this._activeCard) this._activeCard.classList.add('chord-card-active');
+
+      // Focus trap via FloatingPopup internals
+      var internals = (typeof window !== 'undefined' && window._FloatingPopupInternals) || null;
+      if (internals && internals.createFocusTrap) {
+        this._focusTrap = internals.createFocusTrap(this._activePopup.el);
+        this._focusTrap.activate();
+      }
+      try { this._activePopup.el.focus(); } catch (e) {}
+
+      var el = this._activePopup.el;
+      var card = this._activeCard;
+      this._outsideClickHandler = function (e) {
+        if (!el.contains(e.target) && !card.contains(e.target)) { self.close(); }
+      };
+      setTimeout(function () { document.addEventListener('click', self._outsideClickHandler); }, 0);
+    },
+
+    close: function () {
+      if (!this._activePopup) return;
+      this._destroyPopup();
+    },
+
+    _destroyPopup: function () {
+      if (this._activeCard) this._activeCard.classList.remove('chord-card-active');
+      if (this._focusTrap) { this._focusTrap.deactivate(); this._focusTrap = null; }
+      if (this._activeCard && this._pinned) { try { this._activeCard.focus(); } catch(e){} }
+      if (this._outsideClickHandler) {
+        document.removeEventListener('click', this._outsideClickHandler);
+        this._outsideClickHandler = null;
+      }
+      this._activePopup.destroy();
+      this._activePopup = null;
+      this._activeCard  = null;
+      this._pinned = false;
+      this._state  = null;
+    },
+
+    cancelHoverTimer: function () {
+      if (this._hoverTimer) { clearTimeout(this._hoverTimer); this._hoverTimer = null; }
+    },
+
+    cancelCloseTimer: function () {
+      if (this._closeTimer) { clearTimeout(this._closeTimer); this._closeTimer = null; }
+    }
+  };
+
+  /**
+   * Gerencia hover nos ChordCards: abre popup transient após 300ms.
+   */
+  function handleChordCardHover(chord, cardEl, entering) {
+    var self = ChordPopupManager;
+    if (entering) {
+      if (self._pinned && self._activeCard !== cardEl) return;
+      self.cancelCloseTimer();
+      self._hoverTimer = setTimeout(function () {
+        var shapes = LocalChordDB.getChordShapes(chord.name);
+        if (!shapes || shapes.length === 0) return;
+        self.open(cardEl, { name: chord.name, root: chord.root, shapes: shapes }, false);
+      }, 300);
+    } else {
+      self.cancelHoverTimer();
+      if (!self._pinned) {
+        self._closeTimer = setTimeout(function () { self.close(); }, 150);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------
   // ShapeSelectionManager — Persistência de voicings via localStorage
   // Requirements: 2.1–2.5, 3.1–3.6, 4.1–4.4, 5.1–5.5, 6.1–6.3
   // ------------------------------------------------------------------
@@ -1314,6 +1660,18 @@ var ChordVisualizer = (function () {
       if (detail.octaves) _octaves = detail.octaves.slice();
       if (lastHarmonicField.length > 0) {
         _renderWithShapes(lastHarmonicField);
+      }
+    });
+
+    // --- K-001: fechar popup ao trocar escala (req 7.1, 7.2) ---
+    document.addEventListener('scale-changed', function () {
+      ChordPopupManager.close();
+    });
+
+    // --- K-001: Escape fecha popup pinned (req 8.3) ---
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && ChordPopupManager._activePopup) {
+        ChordPopupManager.close();
       }
     });
 
@@ -1547,8 +1905,8 @@ var ChordVisualizer = (function () {
         }
       }
 
-      // --- Accessibility & interaction: tabindex + click/keydown handlers ---
-      // Requirements: 1.4, 6.1, 6.2
+      // --- Accessibility & interaction: tabindex + click/keydown + hover handlers ---
+      // Requirements: 1.4, 6.1, 6.2 (chord-fretboard), K-001: 1.1, 1.3, 2.1, 2.2
       card.setAttribute('tabindex', '0');
 
       (function (chordRef, cardEl) {
@@ -1560,6 +1918,13 @@ var ChordVisualizer = (function () {
             e.preventDefault();
             handleChordCardClick(chordRef, cardEl);
           }
+        });
+        // Hover: abre popup transient (K-001: req 1.1, 1.3)
+        cardEl.addEventListener('mouseenter', function () {
+          handleChordCardHover(chordRef, cardEl, true);
+        });
+        cardEl.addEventListener('mouseleave', function () {
+          handleChordCardHover(chordRef, cardEl, false);
         });
       })(chord, card);
 
@@ -1647,34 +2012,37 @@ var ChordVisualizer = (function () {
       return;
     }
 
-    // Requirement 4.3 / 5.2: toggle off if already active
-    if (cardElement.classList.contains('chord-card-active')) {
+    // K-001: delegar ao ChordPopupManager para popup interativo
+    var chordWithShapes = { name: chord.name, root: chord.root, shapes: shapes };
+    ChordPopupManager.cancelHoverTimer();
+    ChordPopupManager.cancelCloseTimer();
+
+    // Toggle: se popup pinned do mesmo card → fechar
+    if (ChordPopupManager._pinned && ChordPopupManager._activeCard === cardElement) {
+      ChordPopupManager.close();
+      return;
+    }
+
+    // Abrir/fixar popup (pin imediato no clique)
+    ChordPopupManager.open(cardElement, chordWithShapes, true);
+
+    // Requirement 4.3 / 5.2 do chord-fretboard-visualization: toggle off se já ativo via classe
+    if (cardElement.classList.contains('chord-card-active') && !ChordPopupManager._pinned) {
       cardElement.classList.remove('chord-card-active');
       _activeChordCard = null;
       document.dispatchEvent(new CustomEvent('chord-deselected'));
       return;
     }
 
-    // Requirement 5.2: remove active class from previously active card
-    if (_activeChordCard) {
+    // Manter compatibilidade: despachar chord-selected para o fretboard
+    if (_activeChordCard && _activeChordCard !== cardElement) {
       _activeChordCard.classList.remove('chord-card-active');
     }
-
-    // Requirement 5.1: apply active class to clicked card
-    cardElement.classList.add('chord-card-active');
     _activeChordCard = cardElement;
 
-    // Extract root from chord name (handles sharps/flats)
     var parsed = parseChordName(chord.name);
-    var root = parsed.root;
-
-    // Requirement 1.1, 1.2: dispatch chord-selected with full detail
     document.dispatchEvent(new CustomEvent('chord-selected', {
-      detail: {
-        chordName: chord.name,
-        root: root,
-        shapes: shapes
-      }
+      detail: { chordName: chord.name, root: parsed.root, shapes: shapes }
     }));
   }
 
@@ -1699,6 +2067,8 @@ var ChordVisualizer = (function () {
     SVGRenderer: SVGRenderer,
     ShapeSelectionManager: ShapeSelectionManager,
     ConfirmButtonRenderer: ConfirmButtonRenderer,
+    ChordPopupManager: ChordPopupManager,
+    handleChordCardHover: handleChordCardHover,
     // Expose internal state for testability
     getActiveChordCard: function () { return _activeChordCard; },
     setActiveChordCard: function (el) { _activeChordCard = el; },
