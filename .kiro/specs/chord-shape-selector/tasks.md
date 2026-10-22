@@ -17,39 +17,35 @@ Estende o ChordVisualizer IIFE com dois novos módulos internos — `ShapeSelect
     - Implementar `loadForScale(tonica, tipoEscala)` — atualiza `currentScaleKey`
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 4.1_
 
-  - [ ]* 1.2 Write property test: StorageKey Derivation
+  - [x] 1.2 Write property test: StorageKey Derivation
     - **Property 5: StorageKey Derivation**
     - Gerar strings arbitrárias para tonica/tipoEscala/chordName
     - Verificar que `deriveScaleKey` retorna formato `tonica + "_" + tipoEscala`
     - Verificar que `buildStorageKey` retorna formato `"chordShape:" + chordName + ":" + scaleKey`
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/storage-key-derivation.property.spec.js`
     - **Validates: Requirements 3.1, 3.6**
 
-  - [ ]* 1.3 Write property test: Confirm Persists Correctly (Round-Trip)
+  - [x] 1.3 Write property test: Confirm Persists Correctly (Round-Trip)
     - **Property 4: Confirm Persists Correctly (Round-Trip)**
     - Gerar chordName, scaleKey e index válidos
     - Chamar `persist()` seguido de `getPersistedIndex()` com shapesCount > index
     - Verificar que o valor retornado é o mesmo index persistido
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/persist-round-trip.property.spec.js`
     - **Validates: Requirements 2.3, 3.1, 3.3**
 
-  - [ ]* 1.4 Write property test: Out-of-Bounds Clamping
+  - [x] 1.4 Write property test: Out-of-Bounds Clamping
     - **Property 6: Out-of-Bounds Clamping**
     - Gerar shapesCount ≥ 1 e índices fora dos limites (≥ shapesCount, negativos, NaN)
     - Verificar que `getPersistedIndex()` retorna 0
     - Verificar que a entrada inválida é removida do localStorage
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/out-of-bounds-clamping.property.spec.js`
     - **Validates: Requirements 3.4**
 
-  - [ ]* 1.5 Write property test: Per-Scale Independence
+  - [x] 1.5 Write property test: Per-Scale Independence
     - **Property 7: Per-Scale Independence**
     - Gerar chordName fixo com dois scaleKeys distintos e índices distintos
     - Persistir index X sob scaleKeyA e index Y sob scaleKeyB
     - Verificar que leitura por scaleKeyA retorna X e por scaleKeyB retorna Y
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/per-scale-independence.property.spec.js`
     - **Validates: Requirements 4.2**
 
@@ -70,28 +66,25 @@ Estende o ChordVisualizer IIFE com dois novos módulos internos — `ShapeSelect
     - Garantir que acordes com 1 shape não renderizam nav/confirm
     - _Requirements: 1.1, 1.2, 2.1, 2.2, 2.3, 2.4, 2.5, 3.2, 3.3, 4.4, 6.1, 6.2, 6.3_
 
-  - [ ]* 2.3 Write property test: ConfirmButton Visibility
+  - [x] 2.3 Write property test: ConfirmButton Visibility
     - **Property 3: ConfirmButton Visibility**
     - Gerar pares arbitrários de inteiros (displayedIndex, persistedIndex)
     - Verificar que `shouldShowConfirm` retorna `true` sse `displayedIndex !== persistedIndex`
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/confirm-button-visibility.property.spec.js`
     - **Validates: Requirements 2.1, 2.2, 2.5**
 
-  - [ ]* 2.4 Write property test: Cyclic Navigation
+  - [x] 2.4 Write property test: Cyclic Navigation
     - **Property 1: Cyclic Navigation**
     - Gerar total T > 1 e currentIndex I (0 ≤ I < T)
     - Verificar que `next()` produz `(I + 1) % T`
     - Verificar que `prev()` produz `(I - 1 + T) % T`
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/cyclic-navigation.property.spec.js`
     - **Validates: Requirements 1.1, 1.2, 1.3, 1.4**
 
-  - [ ]* 2.5 Write property test: Voicing Indicator Format
+  - [x] 2.5 Write property test: Voicing Indicator Format
     - **Property 2: Voicing Indicator Format**
     - Gerar total T ≥ 1 e index I (0 ≤ I < T)
     - Verificar que `getIndicator()` retorna `"${I+1}/${T}"`
-    - Mínimo 100 iterações
     - Criar em `tests/cases/chord-shape-selector/voicing-indicator-format.property.spec.js`
     - **Validates: Requirements 1.5**
 

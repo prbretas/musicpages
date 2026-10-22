@@ -45,48 +45,45 @@ em SN-001) e o bloco antigo some da seção principal.
 
 ---
 
-### CSS-001 · `🟡 spec` · feat: Chord Shape Selector
+### CSS-001 · `🟢 done` · feat: Chord Shape Selector
 
 **Prioridade:** P2 · **Urgência:** média · **Esforço:** M · **Risco:** médio
-**Spec:** `.kiro/specs/chord-shape-selector/` · **Progresso:** 0/19 tasks
+**Spec:** `.kiro/specs/chord-shape-selector/` · **Tests:** 36 property tests passing
 
-#### Contexto
+#### Contexto (implementado)
 
 Seleção e persistência de chord shapes (voicings) no ChordVisualizer. Botão ✓ individual por
 acorde aparece quando o shape exibido difere do persistido; salva no localStorage por escala.
 Restaura automaticamente ao reabrir a mesma escala.
 
+#### Implementação
+
+- `ShapeSelectionManager` — gerencia persistência via localStorage com chaves `chordShape:{chord}:{scale}`
+- `ConfirmButtonRenderer` — cria botão ✓ que aparece quando shape atual ≠ persistido
+- Integração no `render()` — navega entre shapes e persiste seleção
+- 7 arquivos de property tests validam comportamento (36 tests passando)
+
 ---
 
-### K-001 · `🟡 spec` · feat: Card de Acorde Interativo (hover-popup + variar posição + play)
+### K-001 · `🟢 done` · feat: Card de Acorde Interativo (hover-popup + variar posição + play)
 
 **Prioridade:** P2 · **Urgência:** média · **Esforço:** M · **Risco:** médio
-**Spec:** `.kiro/specs/chord-card-interactive/` · **Progresso:** 0/29 tasks
-**Depende de:** CSS-001
+**Spec:** `.kiro/specs/chord-card-interactive/` · **Tests:** existentes no chord-visualizer
+**Depende de:** CSS-001 ✓
 
-#### Contexto
+#### Contexto (implementado)
 
 Evolução da interação dos cards de acorde no campo harmônico para um popup flutuante arrastável,
-reunindo hover-preview, navegação entre voicings e playback. Camada de UI que une as specs
-`chord-fretboard-visualization` e `chord-shape-selector`.
+reunindo hover-preview, navegação entre voicings e playback.
 
-#### Comportamento esperado
+#### Implementação
 
-1. **Hover** — abre popup flutuante com diagrama do voicing atual (some ao sair, persiste ao clicar).
-2. **Clique** — fixa o popup com botões **Variar** e **▶ Play**.
-3. **Variar** — carrossel horizontal de shapes alternativos; voicing selecionado vira o ativo.
-4. **▶ Play** — toca o voicing via `playChord` / `AudioEngine`.
-5. **Arrastável** — reusa `FloatingPopup` (drag, focus trap).
-
-#### Mapeamento técnico
-
-| O que existe | Onde reusar |
-|---|---|
-| `createVoicingNavigator(total)` | navegação entre shapes |
-| `playChord(chordShape)` | playback via AudioEngine |
-| `handleChordCardClick(chord, cardElement)` | ponto de entrada; será evoluído |
-| `FloatingPopup` (`script-floating-popup.js`) | drag, overlay, focus trap |
-| `LocalChordDB` | fonte dos voicings |
+- `ChordPopupManager` — singleton que gerencia popup transient/pinned
+- `createChordPopup()` — fábrica de popup com drag, carrossel e actions
+- Hover (300ms) → popup transient, clique → pin com Play/Variar
+- `scale-changed` fecha popup ativo
+- Escape fecha popup pinned
+- Focus trap para acessibilidade
 
 ---
 
@@ -137,6 +134,14 @@ Exibido em `FloatingPopup`.
 ---
 
 ## Concluídas
+
+### ✅ K-001 · `🟢 done` · feat: Card de Acorde Interativo — out/2026
+**Spec:** `.kiro/specs/chord-card-interactive/`
+`ChordPopupManager` com popup transient (hover) e pinned (click), carrossel de shapes, Play button, drag via `_FloatingPopupInternals`, focus trap, Escape fecha.
+
+### ✅ CSS-001 · `🟢 done` · feat: Chord Shape Selector — out/2026
+**Spec:** `.kiro/specs/chord-shape-selector/` · 36 property tests
+`ShapeSelectionManager` + `ConfirmButtonRenderer`, persistência via localStorage por escala (`chordShape:{chord}:{scale}`), indicador "1/N", navegação circular.
 
 ### ✅ CV-001 · `🟢 done` · feat: Chord Visualizer / Campo Harmônico — out/2026
 **Spec:** `.kiro/specs/chord-visualizer/` · PR #11

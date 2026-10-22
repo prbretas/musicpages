@@ -95,6 +95,7 @@ var HeaderNav = (function () {
     <li><a href="#scaleCircleContainer">Círculo de Escalas</a></li>
     <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
     <li><a href="#songsterrContainer">Songsterr</a></li>
+    <li><a href="#cifraClubContainer">CifraClub</a></li>
   </ul>
 </nav>
 ```

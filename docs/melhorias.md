@@ -25,7 +25,6 @@ Neste arquivo incluo novas ideias para implementação. Ao receber uma ideia nov
 8. docs/issues.md  → status: 🟢 done
 9. docs/concluido.md → registrar entrega
 ```
-
 ---
 
 ## MATRIZ DE PRIORIZAÇÃO (out/2026)
@@ -79,3 +78,5 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 - **J-001** — Toggle modo completo do Metrônomo
 - **D-001** — Gerador de backing tracks
 - **B-001** — Treino de ouvido (Tone.js)
+
+
