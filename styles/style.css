@@ -978,6 +978,162 @@ body.dark .chord-visualizer-offline {
   border-color: #444;
 }
 
+/* ============================= Chord Popup (K-001) ============================= */
+
+.chord-popup {
+  background: var(--bg-color, #fff);
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  min-width: 120px;
+  max-width: 260px;
+  padding: 6px;
+  cursor: default;
+  user-select: none;
+}
+
+.chord-popup--pinned {
+  padding: 0;
+  min-width: 150px;
+}
+
+/* Handle de arraste */
+.chord-popup__handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  cursor: grab;
+  color: #bbb;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.chord-popup__handle:active { cursor: grabbing; }
+
+/* Header (modo pinned) */
+.chord-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px 4px 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.chord-popup__title {
+  flex: 1;
+  font-weight: bold;
+  font-size: 13px;
+  color: #e25a00;
+}
+
+.chord-popup__close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  color: #888;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.chord-popup__close:hover { color: #333; background: rgba(0,0,0,0.07); }
+
+.chord-popup__diagram {
+  padding: 6px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Botões de ação (Play + Variar) */
+.chord-popup__actions {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+  border-top: 1px solid #eee;
+}
+
+.chord-popup__play,
+.chord-popup__variar {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 11px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid #ced4da;
+  background: none;
+  transition: background 0.15s;
+}
+
+.chord-popup__play:hover,
+.chord-popup__variar:hover {
+  background: #f0f0f0;
+}
+
+.chord-popup__play:disabled,
+.chord-popup__variar:disabled {
+  cursor: not-allowed;
+}
+
+/* Carrossel de shapes */
+.chord-popup__carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 4px;
+  padding: 4px 8px 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.carousel__item {
+  flex-shrink: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px;
+  transition: border-color 0.15s;
+}
+
+.carousel__item:hover { border-color: #aaa; }
+.carousel__item--active { border-color: #e25a00; }
+
+.carousel__item:focus {
+  outline: 2px solid #e25a00;
+  outline-offset: 1px;
+}
+
+/* Dark mode */
+body.dark .chord-popup {
+  background: #2a2a2a;
+  border-color: #444;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+body.dark .chord-popup__header,
+body.dark .chord-popup__actions {
+  border-color: #3a3a3a;
+}
+
+body.dark .chord-popup__title { color: #ff8c42; }
+body.dark .chord-popup__close { color: #aaa; }
+body.dark .chord-popup__close:hover { color: #eee; background: rgba(255,255,255,0.08); }
+body.dark .chord-popup__handle { color: #555; }
+
+body.dark .chord-popup__play,
+body.dark .chord-popup__variar {
+  border-color: #555;
+  color: #ccc;
+}
+
+body.dark .chord-popup__play:hover,
+body.dark .chord-popup__variar:hover {
+  background: #3a3a3a;
+}
+
+body.dark .carousel__item:hover { border-color: #777; }
+body.dark .carousel__item--active { border-color: #ff8c42; }
+
 /* ============================= Dark Theme ============================= */
 body.dark {
   background-color: #121212;
