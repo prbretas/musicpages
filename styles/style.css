@@ -1224,6 +1224,84 @@ body.dark .chord-popup__variar:hover {
 body.dark .carousel__item:hover { border-color: #777; }
 body.dark .carousel__item--active { border-color: #ff8c42; }
 
+/* ============================= Shape Grid (CifraClub-style) ============================= */
+
+.chord-shape-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  max-width: 100%;
+}
+
+.chord-shape-item {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #fafafa;
+  transition: border-color 0.15s, transform 0.1s;
+  min-width: 52px;
+}
+
+.chord-shape-item:hover {
+  border-color: #aaa;
+  transform: translateY(-1px);
+}
+
+.chord-shape-item--active {
+  border-color: #e25a00;
+  background: #fff5f0;
+}
+
+.chord-shape-item:focus {
+  outline: 2px solid #e25a00;
+  outline-offset: 2px;
+}
+
+.chord-shape-item svg {
+  display: block;
+}
+
+.chord-shape-label {
+  font-size: 9px;
+  color: #666;
+  margin-top: 2px;
+  text-align: center;
+}
+
+.chord-shape-item--active .chord-shape-label {
+  color: #e25a00;
+  font-weight: 600;
+}
+
+/* Dark mode for shape grid */
+body.dark .chord-shape-item {
+  background: #2a2a2a;
+  border-color: #444;
+}
+
+body.dark .chord-shape-item:hover {
+  border-color: #666;
+}
+
+body.dark .chord-shape-item--active {
+  border-color: #ff8c42;
+  background: #3d2a1a;
+}
+
+body.dark .chord-shape-label {
+  color: #888;
+}
+
+body.dark .chord-shape-item--active .chord-shape-label {
+  color: #ff8c42;
+}
+
 /* ============================= Dark Theme ============================= */
 body.dark {
   background-color: #121212;

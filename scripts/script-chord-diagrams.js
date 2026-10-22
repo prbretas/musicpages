@@ -1241,60 +1241,74 @@ var ChordVisualizer = (function () {
       }
       actionsDiv.appendChild(playBtn);
 
-      // Botão Variar
-      var variarBtn = document.createElement('button');
-      variarBtn.className = 'chord-popup__variar';
-      variarBtn.setAttribute('aria-label', 'Variar posicao do acorde');
-      variarBtn.textContent = 'Variar';
-      var carouselDiv = document.createElement('div');
-      carouselDiv.className = 'chord-popup__carousel';
-      carouselDiv.hidden = true;
-
-      if (chord.shapes.length <= 1) {
-        variarBtn.disabled = true;
-        variarBtn.style.opacity = '0.4';
-      } else {
-        variarBtn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          carouselDiv.hidden = !carouselDiv.hidden;
-        });
-
+      // === Shape Grid (CifraClub-style) ===
+      // Mostra todas as posições como miniaturas clicáveis
+      if (chord.shapes.length > 1) {
+        var shapeGridDiv = document.createElement('div');
+        shapeGridDiv.className = 'chord-shape-grid';
+        shapeGridDiv.setAttribute('role', 'listbox');
+        shapeGridDiv.setAttribute('aria-label', 'Posições disponíveis para ' + chord.name);
+        
         var currentIdx = (ChordPopupManager._state && ChordPopupManager._state.activeShapeIndex) || 0;
-        var carouselItems = [];
-        for (var ci = 0; ci < chord.shapes.length; ci++) {
-          (function (idx) {
-            var item = document.createElement('div');
-            item.className = 'carousel__item' + (idx === currentIdx ? ' carousel__item--active' : '');
-            item.setAttribute('aria-label', 'Shape ' + (idx + 1) + ' de ' + chord.shapes.length);
-            item.setAttribute('tabindex', '0');
-            item.appendChild(SVGRenderer.renderDiagram(chord.shapes[idx], {
-              numStrings: _numStrings, isDark: document.body.classList.contains('dark'),
-              diagramWidth: 60, diagramHeight: 75
-            }));
-
-            function selectItem() {
-              for (var j = 0; j < carouselItems.length; j++) carouselItems[j].classList.remove('carousel__item--active');
-              item.classList.add('carousel__item--active');
-              if (ChordPopupManager._state) ChordPopupManager._state.activeShapeIndex = idx;
-              updateShape(idx);
-              document.dispatchEvent(new CustomEvent('chord-shape-changed', {
-                detail: { chordName: chord.name, shapeIndex: idx }
-              }));
-              if (typeof pinnedOpts.onShapeSelect === 'function') pinnedOpts.onShapeSelect(idx);
-            }
-
-            item.addEventListener('click', function (e) { e.stopPropagation(); selectItem(); });
-            item.addEventListener('keydown', function (e) {
-              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectItem(); }
+        
+        chord.shapes.forEach(function (shape, idx) {
+          var item = document.createElement('div');
+          item.className = 'chord-shape-item' + (idx === currentIdx ? ' chord-shape-item--active' : '');
+          item.setAttribute('role', 'option');
+          item.setAttribute('aria-selected', idx === currentIdx.toString());
+          item.setAttribute('tabindex', idx === 0 ? '0' : '-1');
+          
+          // Mini SVG (50x65)
+          item.appendChild(SVGRenderer.renderDiagram(shape, {
+            numStrings: _numStrings,
+            isDark: document.body.classList.contains('dark'),
+            diagramWidth: 50,
+            diagramHeight: 65,
+            fretsToShow: 4
+          }));
+          
+          // Label: "Aberto" para open positions, senão o número da casa
+          var label = document.createElement('span');
+          label.className = 'chord-shape-label';
+          var isOpen = shape.startFret === 1 && shape.frets.filter(function (f) { return f === 0; }).length > 0;
+          label.textContent = isOpen ? 'Aberto' : shape.startFret;
+          item.appendChild(label);
+          
+          function selectItem() {
+            // Update visual selection
+            var items = shapeGridDiv.querySelectorAll('.chord-shape-item');
+            items.forEach(function (it, i) {
+              it.classList.toggle('chord-shape-item--active', i === idx);
+              it.setAttribute('aria-selected', i === idx.toString());
+              it.setAttribute('tabindex', i === 0 ? '0' : '-1');
             });
-            carouselItems.push(item);
-            carouselDiv.appendChild(item);
-          })(ci);
-        }
+            // Update main diagram
+            if (ChordPopupManager._state) ChordPopupManager._state.activeShapeIndex = idx;
+            updateShape(idx);
+            // Dispatch event
+            document.dispatchEvent(new CustomEvent('chord-shape-changed', {
+              detail: { chordName: chord.name, shapeIndex: idx }
+            }));
+            if (typeof pinnedOpts.onShapeSelect === 'function') pinnedOpts.onShapeSelect(idx);
+          }
+          
+          item.addEventListener('click', function (e) {
+            e.stopPropagation();
+            selectItem();
+          });
+          item.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              selectItem();
+            }
+          });
+          
+          shapeGridDiv.appendChild(item);
+        });
+        
+        el.appendChild(shapeGridDiv);
       }
-      actionsDiv.appendChild(variarBtn);
-      el.appendChild(actionsDiv);
-      el.appendChild(carouselDiv);
+      // Fim Shape Grid
     }
 
     function destroy() {
