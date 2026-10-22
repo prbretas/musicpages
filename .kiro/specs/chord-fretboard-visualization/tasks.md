@@ -70,7 +70,7 @@ Conectar o grid de diagramas de acorde ao fretboard via CustomEvents (`chord-sel
 - [x] 3. Checkpoint - Verificar lógica pura e componentes DOM
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Implementar dispatch de eventos no ChordVisualizer
+- [x] 4. Implementar dispatch de eventos no ChordVisualizer
   - [x] 4.1 Implementar `handleChordCardClick(chord, cardElement)` em `script-chord-diagrams.js`
     - Verifica se chord tem shapes disponíveis via `LocalChordDB.getChordShapes(chord.name)`, se não tem: return sem dispatch
     - Se card já ativo (tem classe `chord-card-active`): dispatch `chord-deselected`, remove classe, return
@@ -79,7 +79,7 @@ Conectar o grid de diagramas de acorde ao fretboard via CustomEvents (`chord-sel
     - Dispatch `chord-selected` com `{ chordName, root, shapes }`
     - _Requirements: 1.1, 1.2, 1.3, 5.1, 5.2, 5.3_
 
-  - [ ] 4.2 Integrar handler no render de ChordCards
+  - [x] 4.2 Integrar handler no render de ChordCards
     - Adicionar event listener de `click` em cada `.chord-card` durante renderização
     - Adicionar `tabindex="0"` nos cards e handler para Enter/Space
     - Usar `stopPropagation` nos botões ◀ ▶ internos do card para não disparar `chord-selected`
@@ -142,7 +142,7 @@ Conectar o grid de diagramas de acorde ao fretboard via CustomEvents (`chord-sel
     - Estilo visual de seleção (ex: border-color, box-shadow ou outline)
     - _Requirements: 5.1_
 
-- [ ] 7. Final checkpoint - Validação completa
+- [x] 7. Final checkpoint - Validação completa
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
