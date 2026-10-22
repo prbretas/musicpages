@@ -108,13 +108,13 @@ Implementação da visualização de escalas no fretboard por shapes (CAGED). O 
     - Arquivo: `tests/cases/scale-shapes-caged/scale-change-reset.property.spec.js`
     - Simular dois scale-changed eventos, verificar todos toggles ativos após o segundo
 
-- [ ] 5. Implementar interação hover
+- [x] 5. Implementar interação hover
   - [x] 5.1 Implementar `computeHoverOpacities(hoveredShapeIndex, totalShapes)` como função pura em `script-scale-shapes.js`
     - Retorna array de opacidades: 1.0 para shape hovered, 0.3 para demais
     - Quando hoveredShapeIndex === -1, retorna todos com 1.0
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 5.2 Implementar `setupHoverInteraction(shapes)` com event listeners em `script-scale-shapes.js`
+  - [x] 5.2 Implementar `setupHoverInteraction(shapes)` com event listeners em `script-scale-shapes.js`
     - mouseenter em note-cell com shape: aplicar opacidades via style inline ou toggle de classe
     - mouseleave (quando pointer sai de todas note-cells com shape): restaurar tudo a 1.0
     - Respeitar toggles — shapes desabilitados não participam do hover
@@ -151,7 +151,7 @@ Implementação da visualização de escalas no fretboard por shapes (CAGED). O 
     - Testar: ShapeEngine lê corretamente detail do evento (Req 5.2)
     - _Requirements: 2.5, 4.2, 5.2, 5.4, 5.6_
 
-- [ ] 8. Final checkpoint - Validar integração completa
+- [x] 8. Final checkpoint - Validar integração completa
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
