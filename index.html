@@ -26,6 +26,7 @@
     <script src="./scripts/script-scale-circle.js" defer></script>
     <script src="./scripts/script-circle-of-fifths.js" defer></script>
     <script defer src="scripts/script-chord-diagrams.js"></script>
+    <script src="./scripts/script-scale-hero.js" defer></script>
 
     <script src="./scripts/script-floating-popup.js" defer></script>
     <script src="./scripts/script-sidebar.js" defer></script>
@@ -72,6 +73,7 @@
             <li><a href="#scaleCircleContainer">Círculo de Escalas</a></li>
             <li><a href="#circleOfFifthsContainer">Ciclo de Quintas</a></li>
             <li><a href="#songsterrContainer">Songsterr</a></li>
+            <li><a href="#cifraClubContainer">CifraClub</a></li>
         </ul>
     </nav>
     <div class="container">
@@ -124,7 +126,11 @@
             <div id="clickIndicator" class="click-indicator"></div>
         </div>
 
-        <div id="scaleCalcSection">
+        <div id="scaleHeroSection" class="scale-hero" aria-live="polite" aria-label="Informações da escala ativa">
+            <!-- Preenchido dinamicamente por script-scale-hero.js -->
+        </div>
+
+        <div id="scaleCalcSection" class="scale-calc-section--hidden">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
             <h1>🎹 Transpositor de Escalas Musicais</h1>
         </div>
@@ -229,6 +235,10 @@
         </div>
         <div id="songsterrContainer">
             <h2>Songsterr</h2>
+        </div>
+        <div id="cifraClubContainer">
+            <h2>Cifra Club</h2>
+            <iframe id="cifraClubIframe" src="https://www.cifraclub.com.br/" frameborder="0"></iframe>
         </div>
     </div>
 </body>

@@ -35,6 +35,7 @@ Labels: **Prioridade** (P1 alta / P2 média / P3 baixa) · **Urgência** (alta/m
 
 | Issue | Ideia | Tema | Prio | Urgência | Esforço | Risco | Status |
 |-------|-------|------|------|----------|---------|-------|--------|
+| L-001 | Hero Section da Escala + remover Transpositor | UI/UX | P2 | média | M | baixo | `🟠 in progress` |
 | CV-001 | Chord Visualizer / Campo Harmônico | Dados/UI | **P1** | **alta** | L | médio | `🟢 done` PR #11 |
 | CFV-001 | Chord Fretboard Visualization | UI/interação | **P1** | **alta** | M | médio | `🟢 done` PR #12 |
 | C-001 | Responsividade mobile do Fretboard | UI/responsivo | P2 | média | M | médio | `🟢 done` PR #13 |
