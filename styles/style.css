@@ -1386,12 +1386,12 @@ body.dark #cifraClubContainer {
 }
 
 #cifraClubIframe{
-
+width: 75vw;
+height: 90vh;
 }
 
 body.dark #cifraClubIframe {
-width: 75vw;
-height: 90vh;
+
 
 }
 
@@ -1772,9 +1772,9 @@ body.dark .sidebar-links a.active {
 
 /* ============================= Scale Hero Section (L-001) ============================= */
 
-/* Oculta o bloco legado do Transpositor (mantém selects no DOM para sincronização) */
+/* O bloco do Transpositor permanece visível abaixo do hero */
 .scale-calc-section--hidden {
-  display: none;
+  /* display: none removido — seção exibida normalmente abaixo da hero */
 }
 
 /* Container principal do hero */
