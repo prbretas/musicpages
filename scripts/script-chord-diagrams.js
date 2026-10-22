@@ -1094,6 +1094,106 @@ var ChordVisualizer = (function () {
   }());
 
   // ------------------------------------------------------------------
+  // ShapeSelectionManager — Persistência de voicings via localStorage
+  // Requirements: 2.1–2.5, 3.1–3.6, 4.1–4.4, 5.1–5.5, 6.1–6.3
+  // ------------------------------------------------------------------
+
+  var ShapeSelectionManager = {
+    currentScaleKey: '',
+
+    /**
+     * Derives a ScaleKey from tonica and tipoEscala.
+     * Format: "{tonica}_{tipoEscala}"  e.g. "C_maior", "F#_menor_natural"
+     */
+    deriveScaleKey: function (tonica, tipoEscala) {
+      return (tonica || '') + '_' + (tipoEscala || '');
+    },
+
+    /**
+     * Builds the full localStorage key for a chord shape.
+     * Format: "chordShape:{chordName}:{scaleKey}"
+     */
+    buildStorageKey: function (chordName, scaleKey) {
+      return 'chordShape:' + chordName + ':' + scaleKey;
+    },
+
+    /**
+     * Reads the persisted ShapeIndex for a chord from localStorage.
+     * Returns 0 if not found, invalid, or out of bounds.
+     */
+    getPersistedIndex: function (chordName, scaleKey, shapesCount) {
+      try {
+        var key = this.buildStorageKey(chordName, scaleKey);
+        var stored = localStorage.getItem(key);
+        if (stored === null) return 0;
+        var index = parseInt(stored, 10);
+        if (isNaN(index) || index < 0 || index >= shapesCount) {
+          localStorage.removeItem(key);
+          return 0;
+        }
+        return index;
+      } catch (e) {
+        return 0;
+      }
+    },
+
+    /**
+     * Persists the given ShapeIndex to localStorage.
+     */
+    persist: function (chordName, scaleKey, index) {
+      try {
+        var key = this.buildStorageKey(chordName, scaleKey);
+        localStorage.setItem(key, String(index));
+      } catch (e) {
+        // localStorage unavailable — fail silently
+      }
+    },
+
+    /**
+     * Returns true if the ConfirmButton should be visible
+     * (displayed index differs from persisted index).
+     */
+    shouldShowConfirm: function (displayedIndex, persistedIndex) {
+      return displayedIndex !== persistedIndex;
+    },
+
+    /**
+     * Updates currentScaleKey for a new scale.
+     */
+    loadForScale: function (tonica, tipoEscala) {
+      this.currentScaleKey = this.deriveScaleKey(tonica, tipoEscala);
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // ConfirmButtonRenderer — Cria e controla o botão ✓
+  // Requirements: 5.1–5.5
+  // ------------------------------------------------------------------
+
+  var ConfirmButtonRenderer = {
+    /**
+     * Creates a ConfirmButton element.
+     * @returns {HTMLButtonElement}
+     */
+    createButton: function () {
+      var btn = document.createElement('button');
+      btn.className = 'chord-confirm-btn';
+      btn.textContent = '\u2713'; // ✓
+      btn.setAttribute('aria-label', 'Confirmar shape selecionado');
+      btn.style.display = 'none'; // hidden by default
+      return btn;
+    },
+
+    /**
+     * Updates visibility of the ConfirmButton.
+     * Uses display:none to hide — never removes from DOM.
+     */
+    updateVisibility: function (btn, visible) {
+      btn.style.display = visible ? '' : 'none';
+    }
+  };
+
+  // ------------------------------------------------------------------
   // Internal State
   // ------------------------------------------------------------------
 
@@ -1114,6 +1214,12 @@ var ChordVisualizer = (function () {
 
   /** @type {number[]} Active instrument octaves per string */
   var _octaves = [2, 2, 3, 3, 3, 4];
+
+  /** @type {string} Last known tônica — used as part of StorageKey for voicing persistence */
+  var _lastTonica = '';
+
+  /** @type {string} Last known tipoEscala — used as part of StorageKey for voicing persistence */
+  var _lastTipoEscala = '';
 
   // Chromatic note order for MIDI calculation
   var NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
@@ -1179,6 +1285,11 @@ var ChordVisualizer = (function () {
       if (!detail || !detail.notes || !detail.tonica || !detail.tipoEscala) {
         return;
       }
+
+      // Persist tonica/tipoEscala for voicing StorageKey (Requirements: 3.1, 3.6)
+      _lastTonica = detail.tonica;
+      _lastTipoEscala = detail.tipoEscala;
+      ShapeSelectionManager.loadForScale(_lastTonica, _lastTipoEscala);
 
       var chords = computeHarmonicField(detail.tonica, detail.tipoEscala, detail.notes);
       lastHarmonicField = chords;
@@ -1356,7 +1467,20 @@ var ChordVisualizer = (function () {
 
         // Voicing navigation (if multiple voicings)
         if (shapes.length > 1) {
+          // Requirements: 3.2, 3.3 — ler índice persistido e iniciar navigator no índice correto
+          var scaleKey = ShapeSelectionManager.currentScaleKey;
+          var persistedIdx = ShapeSelectionManager.getPersistedIndex(chord.name, scaleKey, shapes.length);
           var nav = createVoicingNavigator(shapes.length);
+          // Avança o navigator até o índice persistido
+          for (var pi = 0; pi < persistedIdx; pi++) { nav.next(); }
+
+          // Renderiza o shape persistido (não necessariamente o índice 0)
+          if (persistedIdx > 0) {
+            svgWrapper.innerHTML = '';
+            var persistedSvg = SVGRenderer.renderDiagram(shapes[persistedIdx], { numStrings: _numStrings, isDark: isDark });
+            svgWrapper.appendChild(persistedSvg);
+          }
+
           var navDiv = document.createElement('div');
           navDiv.className = 'chord-voicing-nav';
 
@@ -1369,33 +1493,55 @@ var ChordVisualizer = (function () {
           indicator.className = 'chord-voicing-indicator';
           indicator.textContent = nav.getIndicator();
 
+          // Requirements: 2.1–2.5 — botão de confirmação ✓
+          var confirmBtn = ConfirmButtonRenderer.createButton();
+
           var nextBtn = document.createElement('button');
           nextBtn.textContent = '\u25B6';
           nextBtn.className = 'chord-nav-btn';
           nextBtn.setAttribute('aria-label', 'Próximo voicing');
 
-          // Closure for navigation event handlers
-          (function (navState, allShapes, svgWrapperEl, indicatorEl) {
+          // Closure para handlers de navegação e confirmação
+          (function (navState, allShapes, svgWrapperEl, indicatorEl, confirmBtnEl, chordName, sk) {
+            var persisted = ShapeSelectionManager.getPersistedIndex(chordName, sk, allShapes.length);
+
+            function onNavigate() {
+              svgWrapperEl.innerHTML = '';
+              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: _numStrings, isDark: document.body.classList.contains('dark') });
+              svgWrapperEl.appendChild(newSvg);
+              indicatorEl.textContent = navState.getIndicator();
+              // Requirements: 2.1, 2.2 — mostrar/esconder ConfirmButton
+              ConfirmButtonRenderer.updateVisibility(
+                confirmBtnEl,
+                ShapeSelectionManager.shouldShowConfirm(navState.currentIndex, persisted)
+              );
+            }
+
             prevBtn.addEventListener('click', function (e) {
               e.stopPropagation();
               navState.prev();
-              svgWrapperEl.innerHTML = '';
-              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: _numStrings, isDark: document.body.classList.contains('dark') });
-              svgWrapperEl.appendChild(newSvg);
-              indicatorEl.textContent = navState.getIndicator();
+              onNavigate();
             });
+
             nextBtn.addEventListener('click', function (e) {
               e.stopPropagation();
               navState.next();
-              svgWrapperEl.innerHTML = '';
-              var newSvg = SVGRenderer.renderDiagram(allShapes[navState.currentIndex], { numStrings: _numStrings, isDark: document.body.classList.contains('dark') });
-              svgWrapperEl.appendChild(newSvg);
-              indicatorEl.textContent = navState.getIndicator();
+              onNavigate();
             });
-          })(nav, shapes, svgWrapper, indicator);
+
+            // Requirements: 2.3, 3.1 — confirmar e persistir shape selecionado
+            confirmBtnEl.addEventListener('click', function (e) {
+              e.stopPropagation();
+              ShapeSelectionManager.persist(chordName, sk, navState.currentIndex);
+              persisted = navState.currentIndex;
+              ConfirmButtonRenderer.updateVisibility(confirmBtnEl, false);
+            });
+
+          })(nav, shapes, svgWrapper, indicator, confirmBtn, chord.name, scaleKey);
 
           navDiv.appendChild(prevBtn);
           navDiv.appendChild(indicator);
+          navDiv.appendChild(confirmBtn);
           navDiv.appendChild(nextBtn);
           card.appendChild(navDiv);
         }
@@ -1551,6 +1697,8 @@ var ChordVisualizer = (function () {
     LocalChordDB: LocalChordDB,
     UberchordClient: UberchordClient,
     SVGRenderer: SVGRenderer,
+    ShapeSelectionManager: ShapeSelectionManager,
+    ConfirmButtonRenderer: ConfirmButtonRenderer,
     // Expose internal state for testability
     getActiveChordCard: function () { return _activeChordCard; },
     setActiveChordCard: function (el) { _activeChordCard = el; },

@@ -918,6 +918,41 @@ body.popup-open {
   color: #6c757d;
 }
 
+/* ConfirmButton (✓) — aparece quando voicing exibido ≠ voicing persistido */
+.chord-confirm-btn {
+  background: none;
+  border: 1px solid #28a745;
+  border-radius: 3px;
+  color: #28a745;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 1px 4px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+  min-width: 22px;
+  min-height: 22px;
+}
+
+.chord-confirm-btn:hover {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.chord-confirm-btn:focus {
+  outline: 2px solid #28a745;
+  outline-offset: 1px;
+}
+
+body.dark .chord-confirm-btn {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+body.dark .chord-confirm-btn:hover {
+  background-color: #4caf50;
+  color: #000;
+}
+
 .chord-visualizer-unavailable {
   text-align: center;
   color: #999;

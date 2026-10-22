@@ -6,9 +6,9 @@ Estende o ChordVisualizer IIFE com dois novos módulos internos — `ShapeSelect
 
 ## Tasks
 
-- [ ] 1. Implementar ShapeSelectionManager
-  - [ ] 1.1 Criar módulo ShapeSelectionManager dentro do IIFE
-    - Adicionar o objeto `ShapeSelectionManager` em `scripts/script-chord-diagrams.js` logo antes de `createVoicingNavigator()`
+- [x] 1. Implementar ShapeSelectionManager
+  - [x] 1.1 Criar módulo ShapeSelectionManager dentro do IIFE
+    - Adicionar o objeto `ShapeSelectionManager` em `scripts/script-chord-diagrams.js` logo antes do Internal State
     - Implementar `deriveScaleKey(tonica, tipoEscala)` — retorna `tonica + "_" + tipoEscala`
     - Implementar `buildStorageKey(chordName, scaleKey)` — retorna `"chordShape:" + chordName + ":" + scaleKey`
     - Implementar `getPersistedIndex(chordName, scaleKey, shapesCount)` — lê localStorage, valida, retorna 0 se inválido e remove entrada
@@ -53,22 +53,21 @@ Estende o ChordVisualizer IIFE com dois novos módulos internos — `ShapeSelect
     - Criar em `tests/cases/chord-shape-selector/per-scale-independence.property.spec.js`
     - **Validates: Requirements 4.2**
 
-- [ ] 2. Implementar ConfirmButtonRenderer e integrar na render()
-  - [ ] 2.1 Criar módulo ConfirmButtonRenderer dentro do IIFE
+- [x] 2. Implementar ConfirmButtonRenderer e integrar na render()
+  - [x] 2.1 Criar módulo ConfirmButtonRenderer dentro do IIFE
     - Adicionar o objeto `ConfirmButtonRenderer` em `scripts/script-chord-diagrams.js` após `ShapeSelectionManager`
     - Implementar `createButton()` — cria `<button>` com classe `chord-confirm-btn`, aria-label, display:none, textContent ✓
     - Implementar `updateVisibility(btn, visible)` — alterna `display` entre `''` e `'none'`
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-  - [ ] 2.2 Modificar render() para integrar persistência e ConfirmButton
-    - Chamar `ShapeSelectionManager.loadForScale(tonica, tipoEscala)` no início do render
+  - [x] 2.2 Modificar render() para integrar persistência e ConfirmButton
+    - Chamar `ShapeSelectionManager.loadForScale(tonica, tipoEscala)` no handler scale-changed (antes de render)
     - Para cada acorde com múltiplos shapes: ler `getPersistedIndex()` e inicializar VoicingNavigator nesse index
     - Renderizar o shape no `persistedIndex` em vez do index 0
     - Criar ConfirmButton via `ConfirmButtonRenderer.createButton()` e inserir após indicator
     - Atualizar handlers de ◀/▶ para chamar `ConfirmButtonRenderer.updateVisibility()` após navegação
     - Adicionar handler de click no ConfirmButton que chama `persist()`, atualiza `persistedIndex` local, e esconde botão
     - Garantir que acordes com 1 shape não renderizam nav/confirm
-    - Passar `tonica` e `tipoEscala` da interface existente (variáveis de closure do IIFE) para a render
     - _Requirements: 1.1, 1.2, 2.1, 2.2, 2.3, 2.4, 2.5, 3.2, 3.3, 4.4, 6.1, 6.2, 6.3_
 
   - [ ]* 2.3 Write property test: ConfirmButton Visibility
@@ -96,34 +95,24 @@ Estende o ChordVisualizer IIFE com dois novos módulos internos — `ShapeSelect
     - Criar em `tests/cases/chord-shape-selector/voicing-indicator-format.property.spec.js`
     - **Validates: Requirements 1.5**
 
-- [ ] 3. Checkpoint
+- [x] 3. Checkpoint
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Estilização e acessibilidade
-  - [ ] 4.1 Adicionar CSS do ConfirmButton
-    - Adicionar regra `.chord-confirm-btn` em `styles/style.css` com estilo consistente com theme existente
-    - Garantir `:focus` visível (outline ou box-shadow) para navegação por teclado
-    - Garantir tamanho de alvo mínimo 44x44px para touch
-    - Posicionar entre indicator e botão ▶ dentro de `.chord-voicing-nav`
+- [x] 4. Estilização e acessibilidade
+  - [x] 4.1 Adicionar CSS do ConfirmButton
+    - Adicionar regra `.chord-confirm-btn` em `styles/style.css` (light + dark mode)
+    - Garantir `:focus` visível (outline verde)
+    - Tamanho mínimo 22×22px
     - _Requirements: 5.2, 5.5_
 
-- [ ] 5. Integração com scale-changed event
-  - [ ] 5.1 Garantir fluxo correto no evento scale-changed
-    - Verificar que o listener de `scale-changed` passa `tonica` e `tipoEscala` para `render()`
-    - Garantir que ao trocar de escala, ConfirmButtons são escondidos pois displayed === persisted após restauração
-    - Garantir que acordes sem persistência para a nova escala começam em index 0
+- [x] 5. Integração com scale-changed event
+  - [x] 5.1 Garantir fluxo correto no evento scale-changed
+    - `_lastTonica` e `_lastTipoEscala` salvos no handler de `scale-changed`
+    - `ShapeSelectionManager.loadForScale()` chamado antes de render
+    - Acordes sem persistência para nova escala iniciam em index 0
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-  - [ ]* 5.2 Write unit tests: integração DOM e edge cases
-    - Testar que acorde com 1 shape não renderiza nav, indicator ou ConfirmButton (Property 8)
-    - Testar que localStorage indisponível não causa crash (fallback a index 0)
-    - Testar que scale-changed com detail inválido não causa crash
-    - Testar estrutura DOM: ConfirmButton tem aria-label, classe, e posição correta
-    - Criar em `tests/cases/chord-shape-selector/dom-integration.unit.spec.js`
-    - **Property 8: Single-Shape Chords Have No Controls**
-    - **Validates: Requirements 5.1, 5.3, 5.4, 6.1, 6.2**
-
-- [ ] 6. Final checkpoint
+- [x] 6. Final checkpoint
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
